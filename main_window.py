@@ -12,7 +12,8 @@ class MyWindow(tk.Tk):
         self.label_title.pack()
 
         self.init_salary = 0
-        self.salary_entry = tk.Entry(self)
+        self.salary_entry = tk.Entry(self, textvariable="33000")
+        self.salary_entry.insert(0, "33000")
         self.salary_entry.pack()
 
         self.loan_check_var = tk.BooleanVar()
