@@ -8,20 +8,23 @@ class MyWindow(tk.Tk):
         self.title("Budgeting App")
         self.geometry("400x400")
         
+        self.label_title = tk.Label(self, text="Enter Salary Below")
+        self.label_title.pack()
+
         self.init_salary = 0
         self.salary_entry = tk.Entry(self)
         self.salary_entry.pack()
 
-        self.student_loan_check_var = tk.BooleanVar()
-        self.student_loan_check = tk.Checkbutton(self, text="Student Loan", variable=self.student_loan_check_var)
-        self.student_loan_check.pack()
+        self.loan_check_var = tk.BooleanVar()
+        self.loan_check = tk.Checkbutton(self, text="Student Loan", variable=self.loan_check_var)
+        self.loan_check.pack()
         
         self.button = tk.Button(self, text="Calculate", command=self.on_click)
         self.button.pack()
 
         self.label = tk.Label(self, text="")
         self.label.pack()
-
+        
         
     def on_click(self):
         self.init_salary = float(self.salary_entry.get())
@@ -40,7 +43,9 @@ class MyWindow(tk.Tk):
         salary -= self.singleTax(1048*12, 0.12)
 
         # student loan
-        salary -= self.singleTax(27295, 0.09)
+        if self.loan_check_var.get():
+            print("loan")
+            salary -= self.singleTax(27295, 0.09)
 
         return np.round(salary/12, 2)
 
