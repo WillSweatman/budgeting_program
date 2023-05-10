@@ -1,0 +1,9 @@
+Help list here!
+
+Handy tips:
+    You can click within the scrollbars, either side of the slider,
+    to make fine adjustments to your ratios.
+
+    Within the treeview, as well as sorting by the column values,
+    you can drag and drop your individual exenses into whatever
+    order you like.

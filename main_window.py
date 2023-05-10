@@ -1,6 +1,10 @@
 import tkinter as tk
 from tkinter import ttk
 import numpy as np
+import os
+
+# my own classes
+from treeview_class import CustomTreeview
 
 class MyWindow(tk.Tk):
     def __init__(self):
@@ -8,6 +12,7 @@ class MyWindow(tk.Tk):
         
         self.title("Budgeting App")
         self.geometry("400x400")
+        width=400
         
         self.notebook = ttk.Notebook(self)
         self.notebook.pack(side=tk.TOP, fill='both', expand=True)
@@ -15,6 +20,10 @@ class MyWindow(tk.Tk):
         self.notebook.add(self.tab1, text='Salary and Ratios')
         self.tab2 = tk.Frame(self.notebook)
         self.notebook.add(self.tab2, text='Expenses')
+        self.tab3 = tk.Frame(self.notebook)
+        self.notebook.add(self.tab3, text='Help')
+
+        """tab1"""
 
         core = tk.Frame(self.tab1)
         core.pack()
@@ -39,7 +48,6 @@ class MyWindow(tk.Tk):
 
         ratios = tk.Frame(self.tab1)
         ratios.pack()
-        self.i = 0
 
         self.label_scrolls = tk.Label(ratios, text="Need : Want : Use (Roughly 50:30:20)" + 
                                       "\nNeed shouldnt breach 50, and dictate the others")
@@ -70,11 +78,23 @@ class MyWindow(tk.Tk):
         self.label_want_val.grid(row=2, column=2)
         self.label_use_val.grid(row=3, column=2)
 
-        # stop changing label size wobbling the grid
-        ratios.columnconfigure(0, weight=1)
-        ratios.columnconfigure(1, weight=1)
-        ratios.columnconfigure(2, weight=1)
+        """tab2"""
 
+        self.expenses_tree = CustomTreeview(self.tab2, width)
+        self.expenses_tree.pack()
+
+        """tab3"""
+        self.help_label = tk.Label(self.tab3)
+        self.help_label.pack(side="left", anchor="nw")
+
+        # ive opted to have it as a .txt file and open it so that
+        # its easier to edit and it can be accessed without running
+        # the program every time
+        path = os.path.dirname(__file__) + "\help.txt"
+        with open(path, "r") as f:
+            text = f.read()
+
+        self.help_label.config(text=text, justify="left")
         
     def onClick(self):
         self.init_salary = float(self.salary_entry.get())
