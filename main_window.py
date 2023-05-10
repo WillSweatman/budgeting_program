@@ -29,25 +29,53 @@ class MyWindow(tk.Tk):
         self.label_monthly = tk.Label(core, text="")
         self.label_monthly.pack()
 
-        self.label_scrolls = tk.Label(core, text="Need : Want : Use (Roughly 50:30:20)\nNeed capped at 50, and determines the others")
-        self.label_scrolls.pack()
+        ratios = tk.Frame(self)
+        ratios.pack()
+        self.i = 0
 
-        self.scroll_need = tk.Scale(core, from_=0, to=100, orient=tk.HORIZONTAL,
+        self.label_scrolls = tk.Label(ratios, text="Need : Want : Use (Roughly 50:30:20)" + 
+                                      "\nNeed shouldnt breach 50, and dictate the others")
+        self.label_scrolls.grid(row=0, column=1)
+
+        self.label_need = tk.Label(ratios, text="\nNeed", bg="red", fg="white")
+        self.label_want = tk.Label(ratios, text="\nWant", bg="orange", fg="white")
+        self.label_use = tk.Label(ratios, text="\nUse", bg="green", fg="white")
+
+        self.scroll_need = tk.Scale(ratios, from_=0, to=100, orient=tk.HORIZONTAL, bg="red",
                                     command=lambda *args: self.updateScrollbars("need", *args))
-        self.scroll_want = tk.Scale(core, from_=0, to=100, orient=tk.HORIZONTAL,
+        self.scroll_want = tk.Scale(ratios, from_=0, to=100, orient=tk.HORIZONTAL, bg="orange",
                                     command=lambda *args: self.updateScrollbars("want", *args))
-        self.scroll_use = tk.Scale(core, from_=0, to=100, orient=tk.HORIZONTAL,
+        self.scroll_use = tk.Scale(ratios, from_=0, to=100, orient=tk.HORIZONTAL, bg="green",
                                     command=lambda *args: self.updateScrollbars("use", *args))
+        
+        self.label_need_val = tk.Label(ratios, text="\u2007"*7, bg="red", fg="white")
+        self.label_want_val = tk.Label(ratios, text="\u2007"*7, bg="orange", fg="white")
+        self.label_use_val = tk.Label(ratios, text="\u2007"*7, bg="green", fg="white")
 
-        self.scroll_need.pack()
-        self.scroll_want.pack()
-        self.scroll_use.pack()
+        self.label_need.grid(row=1, column=0)
+        self.label_want.grid(row=2, column=0)
+        self.label_use.grid(row=3, column=0)
+        self.scroll_need.grid(row=1, column=1)
+        self.scroll_want.grid(row=2, column=1)
+        self.scroll_use.grid(row=3, column=1)
+        self.label_need_val.grid(row=1, column=2)
+        self.label_want_val.grid(row=2, column=2)
+        self.label_use_val.grid(row=3, column=2)
+
+        # stop changing label size wobbling the grid
+        ratios.columnconfigure(0, weight=1)
+        ratios.columnconfigure(1, weight=1)
+        ratios.columnconfigure(2, weight=1)
 
         
     def onClick(self):
         self.init_salary = float(self.salary_entry.get())
+
+        self.monthly_salary = self.allTaxes()
         
-        self.label.config(text="Monthly income = "+str(self.allTaxes()))
+        self.label_monthly.config(text="Monthly income = "+str(self.monthly_salary))
+
+        self.updateScrollbars("calc_button_pressed")
 
     def allTaxes(self):
         salary = self.init_salary
@@ -77,19 +105,31 @@ class MyWindow(tk.Tk):
         # scrollbar.get() is quick enough to not worry about frequent calling
 
         need = float(self.scroll_need.get())
-        if args[0] == "need":
-            if need > 50:
-                self.scroll_need.set(50)
-            return
-        
         want_use_string = ["want", "use"]
         want_use_widget = [self.scroll_want, self.scroll_use]
-        if args[0] in want_use_string:
+        if args[0] == "need":
+            #can cap at 50 if wanted
+            # if need > 50:
+            #     self.scroll_need.set(50)
+            #     return
+            self.scroll_want.set(0)
+            self.scroll_use.set(100 - float(self.scroll_need.get()))
+
+        elif args[0] in want_use_string:
             idx = want_use_string.index(args[0])
             if float(want_use_widget[idx].get()) > 100 - need:
                 want_use_widget[idx].set(100-need)
             want_use_widget[idx-1].set(100 - need - float(want_use_widget[idx].get()))
 
+        if self.label_monthly.cget("text") == "":
+            return
+        # attempt at stopping the wobbling by adding spaces (full-width \u2007) to text
+        need_text = "{:.2f}".format(np.round(self.monthly_salary*(self.scroll_need.get()/100), 2))
+        want_text = "{:.2f}".format(np.round(self.monthly_salary*(self.scroll_want.get()/100), 2))
+        use_text = "{:.2f}".format(np.round(self.monthly_salary*(self.scroll_use.get()/100), 2))
+        self.label_need_val.config(text=(7 - len(need_text))*"\u2007" + need_text)
+        self.label_want_val.config(text=(7 - len(want_text))*"\u2007" + want_text)
+        self.label_use_val.config(text=(7 - len(use_text))*"\u2007" + use_text)
 
         
 
