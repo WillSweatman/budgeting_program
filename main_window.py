@@ -8,29 +8,46 @@ class MyWindow(tk.Tk):
         self.title("Budgeting App")
         self.geometry("400x400")
         
-        self.label_title = tk.Label(self, text="Enter Salary Below")
+        core = tk.Frame(self)
+        core.pack()
+
+        self.label_title = tk.Label(core, text="Enter Salary Below")
         self.label_title.pack()
 
         self.init_salary = 0
-        self.salary_entry = tk.Entry(self, textvariable="33000")
+        self.salary_entry = tk.Entry(core)
         self.salary_entry.insert(0, "33000")
         self.salary_entry.pack()
 
-        self.loan_check_var = tk.BooleanVar()
-        self.loan_check = tk.Checkbutton(self, text="Student Loan", variable=self.loan_check_var)
+        self.loan_check_var = tk.BooleanVar(value=True)
+        self.loan_check = tk.Checkbutton(core, text="Student Loan", variable=self.loan_check_var)
         self.loan_check.pack()
         
-        self.button = tk.Button(self, text="Calculate", command=self.on_click)
+        self.button = tk.Button(core, text="Calculate", command=self.onClick)
         self.button.pack()
 
-        self.label = tk.Label(self, text="")
-        self.label.pack()
+        self.label_monthly = tk.Label(core, text="")
+        self.label_monthly.pack()
+
+        self.label_scrolls = tk.Label(core, text="Need : Want : Use (Roughly 50:30:20)\nNeed capped at 50, and determines the others")
+        self.label_scrolls.pack()
+
+        self.scroll_need = tk.Scale(core, from_=0, to=100, orient=tk.HORIZONTAL,
+                                    command=lambda *args: self.updateScrollbars("need", *args))
+        self.scroll_want = tk.Scale(core, from_=0, to=100, orient=tk.HORIZONTAL,
+                                    command=lambda *args: self.updateScrollbars("want", *args))
+        self.scroll_use = tk.Scale(core, from_=0, to=100, orient=tk.HORIZONTAL,
+                                    command=lambda *args: self.updateScrollbars("use", *args))
+
+        self.scroll_need.pack()
+        self.scroll_want.pack()
+        self.scroll_use.pack()
+
         
-        
-    def on_click(self):
+    def onClick(self):
         self.init_salary = float(self.salary_entry.get())
         
-        self.label.config(text="Monthly salary = "+str(self.allTaxes()))
+        self.label.config(text="Monthly income = "+str(self.allTaxes()))
 
     def allTaxes(self):
         salary = self.init_salary
@@ -45,7 +62,6 @@ class MyWindow(tk.Tk):
 
         # student loan
         if self.loan_check_var.get():
-            print("loan")
             salary -= self.singleTax(27295, 0.09)
 
         return np.round(salary/12, 2)
@@ -55,6 +71,25 @@ class MyWindow(tk.Tk):
             return 0
         
         return (self.init_salary - band) * rate
+
+    def updateScrollbars(self, *args):
+        #print(args) # (scrollbar name, scrollbar attempted value)
+        # scrollbar.get() is quick enough to not worry about frequent calling
+
+        need = float(self.scroll_need.get())
+        if args[0] == "need":
+            if need > 50:
+                self.scroll_need.set(50)
+            return
+        
+        want_use_string = ["want", "use"]
+        want_use_widget = [self.scroll_want, self.scroll_use]
+        if args[0] in want_use_string:
+            idx = want_use_string.index(args[0])
+            if float(want_use_widget[idx].get()) > 100 - need:
+                want_use_widget[idx].set(100-need)
+            want_use_widget[idx-1].set(100 - need - float(want_use_widget[idx].get()))
+
 
         
 
