@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import ttk
 import numpy as np
 
 class MyWindow(tk.Tk):
@@ -8,7 +9,14 @@ class MyWindow(tk.Tk):
         self.title("Budgeting App")
         self.geometry("400x400")
         
-        core = tk.Frame(self)
+        self.notebook = ttk.Notebook(self)
+        self.notebook.pack(side=tk.TOP, fill='both', expand=True)
+        self.tab1 = tk.Frame(self.notebook)
+        self.notebook.add(self.tab1, text='Salary and Ratios')
+        self.tab2 = tk.Frame(self.notebook)
+        self.notebook.add(self.tab2, text='Expenses')
+
+        core = tk.Frame(self.tab1)
         core.pack()
 
         self.label_title = tk.Label(core, text="Enter Salary Below")
@@ -29,7 +37,7 @@ class MyWindow(tk.Tk):
         self.label_monthly = tk.Label(core, text="")
         self.label_monthly.pack()
 
-        ratios = tk.Frame(self)
+        ratios = tk.Frame(self.tab1)
         ratios.pack()
         self.i = 0
 
