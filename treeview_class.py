@@ -3,13 +3,22 @@ from tkinter import ttk
 
 
 class CustomTreeview(ttk.Frame):
-    def __init__(self, root, width=400, items=[["tube fair", 5, "red"]]*5):
+    def __init__(self, root, width=400, items=[["tube fair", 5, "#ee8959"]]*5):
         super().__init__(root)
 
         # Create Treeview with 3 columns
-        self.tree = ttk.Treeview(self, columns=("Name", "Value (Monthly)", "Color"),
+        self.tree = ttk.Treeview(self, columns=("Name", "Value (Monthly)", "Colour"),
                                  selectmode="extended")
         self.tree.pack(fill="both", expand=True)
+
+        # lets me stop selected items from turning blue everytime
+        self.style = ttk.Style(self)
+        self.style.theme_use("clam")
+        self.style.map("Treeview",
+        )
+
+        # stops the annoying dashed box around the selected notebook tab
+        self.style.configure("Tab", focuscolor=self.style.configure(".")["background"])
 
         # Set column headings
         self.tree.column("#0", width=int(width/4)-5)
@@ -19,7 +28,7 @@ class CustomTreeview(ttk.Frame):
         self.tree.heading("#0", text="iid", anchor="w")
         self.tree.heading("#1", text="Name", anchor="w")
         self.tree.heading("#2", text="Value (Monthly)", anchor="w")
-        self.tree.heading("#3", text="Color", anchor="w")
+        self.tree.heading("#3", text="Colour", anchor="w")
         
         # Create the Scrollbar widget and associate it with the Treeview
         scrollbar = ttk.Scrollbar(self, orient=tk.VERTICAL, command=self.tree.yview)
@@ -27,7 +36,8 @@ class CustomTreeview(ttk.Frame):
         
         # Add the items to the Treeview
         for i, item in enumerate(items):
-            self.tree.insert("", "end", text=i, values=(item))
+            self.tree.insert("", "end", text=i, values=(item), tags=item[-1])
+            self.tree.tag_configure(item[-1], background=item[-1])
 
         
         # Pack the widgets into the frame
@@ -41,27 +51,38 @@ class CustomTreeview(ttk.Frame):
         self.dragged_iid = None
     
     def on_select(self, event):
-        # Remember the ID of the item that was clicked
-        item_id = self.tree.identify_row(event.y)
-        if item_id != "":
-            self.dragged_iid = item_id
-    
+        iid = self.tree.identify_row(event.y)
+
+        if len(self.tree.item(iid)["values"]) != 0:
+            colour = self.tree.item(iid)["values"][-1]
+            self.style.map("Treeview",
+                background=[("selected", "focus", colour)],
+                foreground=[("selected", "focus", "white")]
+            )
+
+        if iid != "":
+            self.dragged_iid = iid
+       
     def on_drag(self, event):
-        # Reorder the items as the mouse is dragged
         if self.dragged_iid is not None:
             new_index = self.tree.index(self.tree.identify_row(event.y))
             if new_index != "":
                 self.tree.move(self.dragged_iid, "", new_index)
-    
+
     def on_release(self, event):
-        # Save the new order of the items
+        iid = self.tree.identify_row(event.y)
+        if len(self.tree.item(iid)["values"]) != 0:
+            colour = self.tree.item(iid)["values"][-1]
+            self.style.map("Treeview",
+                background=[("selected", "focus", colour)],
+                foreground=[("selected", "focus", "black")]
+            )
         self.dragged_iid = None
-        new_order = [self.tree.item(iid)['text'] for iid in self.tree.get_children()]
-        #print(new_order)  # replace with your own code to save the new order
 
     def addItem(self, new_item):
-        self.tree.insert("", "end", text=len(self.tree.get_children()), values=new_item)
-    
+        self.tree.insert("", "end", text=len(self.tree.get_children()), values=new_item, tags=new_item[-1])
+        self.tree.tag_configure(new_item[-1], background=new_item[-1])
+        
 
 
 if __name__ == "__main__":

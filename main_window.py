@@ -19,9 +19,13 @@ class MyWindow(tk.Tk):
         #custom_style = set_custom_style()
 
         # in the mean time
+        self.dark = "#23404b"
         red = "#e76f51"
+        red2 = "#e97c61"
         amber = "#f4a261"
+        amber2 = "#efb366"
         green = "#2a9d8f"
+        green2 = "#5aa786"
         
         self.notebook = ttk.Notebook(self)
         self.notebook.pack(side=tk.TOP, fill='both', expand=True)
@@ -30,7 +34,9 @@ class MyWindow(tk.Tk):
         self.tab2 = tk.Frame(self.notebook)
         self.notebook.add(self.tab2, text='Expenses')
         self.tab3 = tk.Frame(self.notebook)
-        self.notebook.add(self.tab3, text='Help')
+        self.notebook.add(self.tab3, text='Plot')
+        self.tab4 = tk.Frame(self.notebook)
+        self.notebook.add(self.tab4, text='Help')
 
         """tab1"""
 
@@ -49,10 +55,10 @@ class MyWindow(tk.Tk):
         self.loan_check = tk.Checkbutton(core, text="Student Loan", variable=self.loan_check_var)
         self.loan_check.pack()
         
-        self.button = tk.Button(core, text="Calculate", command=self.onClick)
+        self.button = tk.Button(core, text="Tax me", command=self.onClick)
         self.button.pack()
 
-        self.label_monthly = tk.Label(core, text="")
+        self.label_monthly = tk.Label(core, text="", fg="white")
         self.label_monthly.pack()
 
         ratios = tk.Frame(self.tab1)
@@ -60,32 +66,45 @@ class MyWindow(tk.Tk):
 
         self.label_scrolls = tk.Label(ratios, text="Need : Want : Use (Roughly 50:30:20)" + 
                                       "\nNeed shouldnt breach 50, and dictate the others")
-        self.label_scrolls.grid(row=0, column=1)
+        self.label_scrolls.grid(row=0)
 
-        self.label_need = tk.Label(ratios, text="\nNeed", bg=red, fg="white")
-        self.label_want = tk.Label(ratios, text="\nWant", bg=amber, fg="white")
-        self.label_use = tk.Label(ratios, text="\nUse", bg=green, fg="white")
+        ratios_1 = tk.Frame(ratios, width=width/1.5, bg=red2)
+        ratios_1.grid(row=1, sticky="nsew")
+        ratios_2 = tk.Frame(ratios, width=width/1.5, bg=amber2)
+        ratios_2.grid(row=2, sticky="nsew")
+        ratios_3 = tk.Frame(ratios, width=width/1.5, bg=green2)
+        ratios_3.grid(row=3, sticky="nsew")
 
-        self.scroll_need = tk.Scale(ratios, from_=0, to=100, orient=tk.HORIZONTAL, bg=red,
+        self.label_need = tk.Label(ratios_1, text="\nNeed", bg=red, fg="white")
+        self.label_want = tk.Label(ratios_2, text="\nWant", bg=amber, fg="white")
+        self.label_use = tk.Label(ratios_3, text="\nUse \u2007", bg=green, fg="white")
+
+        self.scroll_need = tk.Scale(ratios_1, from_=0, to=100, orient=tk.HORIZONTAL, bg=red,
                                     command=lambda *args: self.updateScrollbars("need", *args))
-        self.scroll_want = tk.Scale(ratios, from_=0, to=100, orient=tk.HORIZONTAL, bg=amber,
+        self.scroll_want = tk.Scale(ratios_2, from_=0, to=100, orient=tk.HORIZONTAL, bg=amber,
                                     command=lambda *args: self.updateScrollbars("want", *args))
-        self.scroll_use = tk.Scale(ratios, from_=0, to=100, orient=tk.HORIZONTAL, bg=green,
+        self.scroll_use = tk.Scale(ratios_3, from_=0, to=100, orient=tk.HORIZONTAL, bg=green,
                                     command=lambda *args: self.updateScrollbars("use", *args))
         
-        self.label_need_val = tk.Label(ratios, text="\u2007"*7, bg=red, fg="white")
-        self.label_want_val = tk.Label(ratios, text="\u2007"*7, bg=amber, fg="white")
-        self.label_use_val = tk.Label(ratios, text="\u2007"*7, bg=green, fg="white")
+        self.label_need_val = tk.Label(ratios_1, text="\u2007"*7, bg=red, fg="white")
+        self.label_want_val = tk.Label(ratios_2, text="\u2007"*7, bg=amber, fg="white")
+        self.label_use_val = tk.Label(ratios_3, text="\u2007"*7, bg=green, fg="white")
 
-        self.label_need.grid(row=1, column=0)
-        self.label_want.grid(row=2, column=0)
-        self.label_use.grid(row=3, column=0)
-        self.scroll_need.grid(row=1, column=1)
-        self.scroll_want.grid(row=2, column=1)
-        self.scroll_use.grid(row=3, column=1)
-        self.label_need_val.grid(row=1, column=2)
-        self.label_want_val.grid(row=2, column=2)
-        self.label_use_val.grid(row=3, column=2)
+        self.label_need.grid(row=0, column=0)
+        self.label_want.grid(row=0, column=0)
+        self.label_use.grid(row=0, column=0)
+        self.scroll_need.grid(row=0, column=1)
+        self.scroll_want.grid(row=0, column=1)
+        self.scroll_use.grid(row=0, column=1)
+        self.label_need_val.grid(row=0, column=2)
+        self.label_want_val.grid(row=0, column=2)
+        self.label_use_val.grid(row=0, column=2)
+
+        for r in [ratios_1, ratios_2, ratios_3]:
+            r.grid_rowconfigure(1, weight=1)
+            r.grid_columnconfigure(1, weight=1)
+        
+        
 
         """tab2"""
 
@@ -97,7 +116,7 @@ class MyWindow(tk.Tk):
 
         self.name_label = tk.Label(self.expense_input, text="Name:")
         self.value_label = tk.Label(self.expense_input, text="Value (Monthly):")
-        self.colour_label = tk.Label(self.expense_input, text="Color:")
+        self.colour_label = tk.Label(self.expense_input, text="Colour:")
         self.name_entry = tk.Entry(self.expense_input)
         self.value_entry = tk.Entry(self.expense_input)
         self.colour_entry = tk.Entry(self.expense_input)
@@ -105,7 +124,7 @@ class MyWindow(tk.Tk):
         # just for now!!!, saves me entering it in every time
         self.name_entry.insert("0", "train")
         self.value_entry.insert("0", "130")
-        self.colour_entry.insert("0", "red")
+        self.colour_entry.insert("0", "#e9c46a")
 
         self.name_label.grid(row=0, column=0)
         self.value_label.grid(row=0, column=1)
@@ -117,8 +136,8 @@ class MyWindow(tk.Tk):
         self.input_button = tk.Button(self.expense_input, text="Input", command=self.newExpense)
         self.input_button.grid(row=2, column=0, columnspan=3)
 
-        """tab3"""
-        self.help_label = tk.Label(self.tab3)
+        """tab4"""
+        self.help_label = tk.Label(self.tab4)
         self.help_label.pack(side="left", anchor="nw")
 
         # ive opted to have it as a .txt file and open it so that
@@ -138,6 +157,8 @@ class MyWindow(tk.Tk):
         self.label_monthly.config(text="Monthly income = "+str(self.monthly_salary))
 
         self.updateScrollbars("calc_button_pressed")
+
+        self.label_monthly.config(bg=self.dark)
 
     def allTaxes(self):
         salary = self.init_salary

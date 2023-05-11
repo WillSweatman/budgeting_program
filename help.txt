@@ -1,6 +1,7 @@
 Help list here!
 
 Handy tips:
+
     You can click within the scrollbars, either side of the slider,
     to make fine adjustments to your ratios.
 
@@ -9,3 +10,11 @@ Handy tips:
     order you like. The original order is tracked by the iid column
     so you can always sort via that column to get back to where you
     started.
+
+    Use the Colour input in the expenses treeview to group different
+    expense types. For example, red could signify transport, green
+    shopping, and so on.
+
+    If near the bottom of the treeview, and wanting to send a selected
+    item to the top, drag it down to the bottom and it will jump to the
+    top.
