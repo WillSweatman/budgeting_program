@@ -20,6 +20,8 @@ class MyWindow(tk.Tk):
 
         # in the mean time
         self.dark = "#23404b"
+        self.dark2 = "#264653"
+        self.blue = "#488299"
         red = "#e76f51"
         red2 = "#e97c61"
         amber = "#f4a261"
@@ -29,7 +31,7 @@ class MyWindow(tk.Tk):
         
         self.notebook = ttk.Notebook(self)
         self.notebook.pack(side=tk.TOP, fill='both', expand=True)
-        self.tab1 = tk.Frame(self.notebook)
+        self.tab1 = tk.Frame(self.notebook, bg=self.dark)
         self.notebook.add(self.tab1, text='Salary and Ratios')
         self.tab2 = tk.Frame(self.notebook)
         self.notebook.add(self.tab2, text='Expenses')
@@ -40,31 +42,31 @@ class MyWindow(tk.Tk):
 
         """tab1"""
 
-        core = tk.Frame(self.tab1)
+        core = tk.Frame(self.tab1, bg=self.dark2)
         core.pack()
 
-        self.label_title = tk.Label(core, text="Enter Salary Below")
+        self.label_title = tk.Label(core, bg=self.blue, text="Enter Salary Below")
         self.label_title.pack()
 
         self.init_salary = 0
-        self.salary_entry = tk.Entry(core)
+        self.salary_entry = tk.Entry(core, bg=self.blue, fg="white")
         self.salary_entry.insert(0, "33000")
         self.salary_entry.pack()
 
         self.loan_check_var = tk.BooleanVar(value=True)
-        self.loan_check = tk.Checkbutton(core, text="Student Loan", variable=self.loan_check_var)
+        self.loan_check = tk.Checkbutton(core, bg=self.blue, text="Student Loan", variable=self.loan_check_var)
         self.loan_check.pack()
         
-        self.button = tk.Button(core, text="Tax me", command=self.onClick)
+        self.button = tk.Button(core, bg=self.blue, text="Tax me", command=self.onClick)
         self.button.pack()
 
-        self.label_monthly = tk.Label(core, text="", fg="white")
+        self.label_monthly = tk.Label(core, text="", bg=self.dark2, fg="white")
         self.label_monthly.pack()
 
-        ratios = tk.Frame(self.tab1)
+        ratios = tk.Frame(self.tab1, bg=self.dark2)
         ratios.pack()
 
-        self.label_scrolls = tk.Label(ratios, text="Need : Want : Use (Roughly 50:30:20)" + 
+        self.label_scrolls = tk.Label(ratios, bg=self.dark2, fg="white", text="Need : Want : Use (Roughly 50:30:20)" + 
                                       "\nNeed shouldnt breach 50, and dictate the others")
         self.label_scrolls.grid(row=0)
 
@@ -103,7 +105,6 @@ class MyWindow(tk.Tk):
         for r in [ratios_1, ratios_2, ratios_3]:
             r.grid_rowconfigure(1, weight=1)
             r.grid_columnconfigure(1, weight=1)
-        
         
 
         """tab2"""
@@ -158,7 +159,7 @@ class MyWindow(tk.Tk):
 
         self.updateScrollbars("calc_button_pressed")
 
-        self.label_monthly.config(bg=self.dark)
+        self.label_monthly.config(bg=self.blue)
 
     def allTaxes(self):
         salary = self.init_salary
