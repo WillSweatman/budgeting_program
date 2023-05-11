@@ -2,6 +2,9 @@ import tkinter as tk
 from tkinter import ttk
 import numpy as np
 import os
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from random import uniform
 
 # my own classes/objects
 from treeview_class import CustomTreeview
@@ -14,6 +17,7 @@ class MyWindow(tk.Tk):
         self.title("Budgeting App")
         self.width=500
         self.geometry(str(self.width)+"x"+str(self.width))
+        self.protocol("WM_DELETE_WINDOW", self.on_closing)
 
         # Set the custom style (not implemented)
         #custom_style = set_custom_style()
@@ -44,78 +48,8 @@ class MyWindow(tk.Tk):
         # filling tabs with content
         self.tab1Content()
         self.tab2Content()
-        #self.tab3Content()
+        self.tab3Content()
         self.tab4Content()
-        
-        
-    def onClick(self):
-        self.init_salary = float(self.salary_entry.get())
-
-        self.monthly_salary = self.allTaxes()
-        
-        self.label_monthly.config(text="Monthly income = "+str(self.monthly_salary))
-
-        self.updateScrollbars("calc_button_pressed")
-
-        self.label_monthly.config(bg=self.blue)
-
-    def allTaxes(self):
-        salary = self.init_salary
-
-        # basic income bands
-        salary -= self.singleTax(12571, 0.20)
-        salary -= self.singleTax(50271, 0.20) # rolling calc, so 20+20=40% tax
-        salary -= self.singleTax(125140, 0.05) # dito, 20+20+5=45% tax
-
-        # national insurance
-        salary -= self.singleTax(1048*12, 0.12)
-
-        # student loan
-        if self.loan_check_var.get():
-            salary -= self.singleTax(27295, 0.09)
-
-        return np.round(salary/12, 2)
-
-    def singleTax(self, band, rate):
-        if self.init_salary < band:
-            return 0
-        
-        return (self.init_salary - band) * rate
-
-    def updateScrollbars(self, *args):
-        #print(args) # (scrollbar name, scrollbar attempted value)
-        # scrollbar.get() is quick enough to not worry about frequent calling
-
-        need = float(self.scroll_need.get())
-        want_use_string = ["want", "use"]
-        want_use_widget = [self.scroll_want, self.scroll_use]
-        if args[0] == "need":
-            #can cap at 50 if wanted
-            # if need > 50:
-            #     self.scroll_need.set(50)
-            #     return
-            self.scroll_want.set(0)
-            self.scroll_use.set(100 - float(self.scroll_need.get()))
-
-        elif args[0] in want_use_string:
-            idx = want_use_string.index(args[0])
-            if float(want_use_widget[idx].get()) > 100 - need:
-                want_use_widget[idx].set(100-need)
-            want_use_widget[idx-1].set(100 - need - float(want_use_widget[idx].get()))
-
-        if self.label_monthly.cget("text") == "":
-            return
-        # attempt at stopping the wobbling by adding spaces (full-width \u2007) to text
-        need_text = "{:.2f}".format(np.round(self.monthly_salary*(self.scroll_need.get()/100), 2))
-        want_text = "{:.2f}".format(np.round(self.monthly_salary*(self.scroll_want.get()/100), 2))
-        use_text = "{:.2f}".format(np.round(self.monthly_salary*(self.scroll_use.get()/100), 2))
-        self.label_need_val.config(text=(7 - len(need_text))*"\u2007" + need_text)
-        self.label_want_val.config(text=(7 - len(want_text))*"\u2007" + want_text)
-        self.label_use_val.config(text=(7 - len(use_text))*"\u2007" + use_text)
-
-    def newExpense(self):
-        new_expense = [self.name_entry.get(), self.value_entry.get(), self.colour_entry.get()]
-        self.expenses_tree.addItem(new_expense)
 
     def tab1Content(self):
         self.core = tk.Frame(self.tab1, bg=self.dark2)
@@ -182,6 +116,7 @@ class MyWindow(tk.Tk):
             r.grid_rowconfigure(1, weight=1)
             r.grid_columnconfigure(1, weight=1)
 
+
     def tab2Content(self):
         self.expenses_tree = CustomTreeview(self.tab2, self.width)
         self.expenses_tree.pack()
@@ -212,7 +147,19 @@ class MyWindow(tk.Tk):
         self.input_button.grid(row=2, column=0, columnspan=3)
 
     def tab3Content(self):
-        raise NotImplementedError("This feature is not implemented yet.")
+
+        self.variables_frame = tk.Frame(self.tab3, bg=self.blue)
+        self.variables_frame.pack(side=tk.LEFT, fill="both", expand=True)
+
+        self.plot_button = tk.Button(self.variables_frame, bg=self.blue, text="Plot", command=self.plotData)
+        self.plot_button.pack(side=tk.LEFT)
+
+        self.plot_frame = tk.Frame(self.tab3, width=self.width-100, height=self.width-100)
+        self.plot_frame.pack()
+
+        canvas = FigureCanvasTkAgg(master=self.plot_frame)
+        canvas.draw()
+        canvas.get_tk_widget().pack()
 
     def tab4Content(self):
         self.help_label = tk.Label(self.tab4)
@@ -226,7 +173,126 @@ class MyWindow(tk.Tk):
             text = f.read()
 
         self.help_label.config(text=text, bg=self.blue, fg="white", justify="left")
+  
+    def onClick(self):
+        self.init_salary = float(self.salary_entry.get())
 
+        self.monthly_salary = self.allTaxes()
+        
+        self.label_monthly.config(text="Monthly income = "+str(self.monthly_salary))
+
+        self.updateScrollbars("calc_button_pressed")
+
+        self.label_monthly.config(bg=self.blue)
+
+    def allTaxes(self, *args):
+        salary = 0
+        if len(args) == 0:
+            salary = self.init_salary
+        else:
+            salary = args[0]
+
+        # basic income bands
+        salary -= self.singleTax(12571, 0.20)
+        salary -= self.singleTax(50271, 0.20) # rolling calc, so 20+20=40% tax
+        salary -= self.singleTax(125140, 0.05) # dito, 20+20+5=45% tax
+
+        # national insurance
+        salary -= self.singleTax(1048*12, 0.12)
+
+        # student loan
+        if self.loan_check_var.get():
+            salary -= self.singleTax(27295, 0.09)
+
+        return np.round(salary/12, 2)
+
+    def singleTax(self, band, rate):
+        if self.init_salary < band:
+            return 0
+        
+        return (self.init_salary - band) * rate
+
+    def updateScrollbars(self, *args):
+        #print(args) # (scrollbar name, scrollbar attempted value)
+        # scrollbar.get() is quick enough to not worry about frequent calling
+
+        need = float(self.scroll_need.get())
+        want_use_string = ["want", "use"]
+        want_use_widget = [self.scroll_want, self.scroll_use]
+        if args[0] == "need":
+            #can cap at 50 if wanted
+            # if need > 50:
+            #     self.scroll_need.set(50)
+            #     return
+            self.scroll_want.set(0)
+            self.scroll_use.set(100 - float(self.scroll_need.get()))
+
+        elif args[0] in want_use_string:
+            idx = want_use_string.index(args[0])
+            if float(want_use_widget[idx].get()) > 100 - need:
+                want_use_widget[idx].set(100-need)
+            want_use_widget[idx-1].set(100 - need - float(want_use_widget[idx].get()))
+
+        if self.label_monthly.cget("text") == "":
+            return
+        # attempt at stopping the wobbling by adding spaces (full-width \u2007) to text
+        need_text = "{:.2f}".format(np.round(self.monthly_salary*(self.scroll_need.get()/100), 2))
+        want_text = "{:.2f}".format(np.round(self.monthly_salary*(self.scroll_want.get()/100), 2))
+        use_text = "{:.2f}".format(np.round(self.monthly_salary*(self.scroll_use.get()/100), 2))
+        self.label_need_val.config(text=(7 - len(need_text))*"\u2007" + need_text)
+        self.label_want_val.config(text=(7 - len(want_text))*"\u2007" + want_text)
+        self.label_use_val.config(text=(7 - len(use_text))*"\u2007" + use_text)
+
+    def newExpense(self):
+        new_expense = [self.name_entry.get(), self.value_entry.get(), self.colour_entry.get()]
+        self.expenses_tree.addItem(new_expense)
+
+    def plotData(self):
+
+        x, y_pre_tax, y = self.runSim(20)
+
+        fig, ax = plt.subplots()
+        ax.plot(x, y_pre_tax)
+        ax.plot(x, y)
+        ax.set_title("Plot "+str(len(plt.get_fignums())))
+        ax.set_xlabel("Years")
+        ax.set_ylabel("Salary (K)")
+
+        # Clear the plot frame
+        for widget in self.plot_frame.winfo_children():
+            widget.destroy()
+
+        # Display the plot in the plot frame
+        canvas = FigureCanvasTkAgg(fig, master=self.plot_frame)
+        canvas.draw()
+        canvas.get_tk_widget().pack()
+
+    def runSim(self, years):
+        x = [0]
+        y_pre_tax = [self.init_salary]
+        y = [self.allTaxes(y_pre_tax[-1])*12]
+
+        for i in range(1, years+1):
+            x.append(i)
+            y_pre_tax.append(y_pre_tax[-1]*uniform(1.03, 1.10))
+
+            y.append(self.allTaxes(y_pre_tax[-1])*12)
+            
+        return x, y_pre_tax, y
+
+    def on_closing(self):
+        
+        # Get a list of all the figure numbers
+        fig_total = plt.get_fignums()
+        #print("Graphs created:",len(fig_total))
+
+        # Loop over the figure numbers and close each figure
+        for fig_num in fig_total:
+            fig = plt.figure(fig_num)
+            plt.close(fig)
+
+        # Close main window
+        self.destroy()
 
 
 
