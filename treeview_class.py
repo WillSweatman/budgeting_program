@@ -3,22 +3,22 @@ from tkinter import ttk
 
 
 class CustomTreeview(ttk.Frame):
-    def __init__(self, root, width=400, items=[["hello", 5, "blue"]]):
+    def __init__(self, root, width=400, items=[["tube fair", 5, "red"]]*5):
         super().__init__(root)
 
         # Create Treeview with 3 columns
-        self.tree = ttk.Treeview(self, columns=("Name", "Value", "Color"),
+        self.tree = ttk.Treeview(self, columns=("Name", "Value (Monthly)", "Color"),
                                  selectmode="extended")
         self.tree.pack(fill="both", expand=True)
 
         # Set column headings
-        self.tree.column("#0", width=int(width/4))
-        self.tree.column("#1", width=int(width/4))
-        self.tree.column("#2", width=int(width/4))
-        self.tree.column("#3", width=int(width/4))
+        self.tree.column("#0", width=int(width/4)-5)
+        self.tree.column("#1", width=int(width/4)-5)
+        self.tree.column("#2", width=int(width/4)-5)
+        self.tree.column("#3", width=int(width/4)-5)
         self.tree.heading("#0", text="iid", anchor="w")
         self.tree.heading("#1", text="Name", anchor="w")
-        self.tree.heading("#2", text="Value", anchor="w")
+        self.tree.heading("#2", text="Value (Monthly)", anchor="w")
         self.tree.heading("#3", text="Color", anchor="w")
         
         # Create the Scrollbar widget and associate it with the Treeview
@@ -60,10 +60,7 @@ class CustomTreeview(ttk.Frame):
         #print(new_order)  # replace with your own code to save the new order
 
     def addItem(self, new_item):
-        self.tree.insert("", "end", values=new_item)
-
-    def getFilterOrder(self):
-        return [self.tree.item(iid)['values'] for iid in self.tree.get_children()]
+        self.tree.insert("", "end", text=len(self.tree.get_children()), values=new_item)
     
 
 

@@ -92,6 +92,31 @@ class MyWindow(tk.Tk):
         self.expenses_tree = CustomTreeview(self.tab2, width)
         self.expenses_tree.pack()
 
+        self.expense_input = tk.Frame(self.tab2)
+        self.expense_input.pack()
+
+        self.name_label = tk.Label(self.expense_input, text="Name:")
+        self.value_label = tk.Label(self.expense_input, text="Value (Monthly):")
+        self.colour_label = tk.Label(self.expense_input, text="Color:")
+        self.name_entry = tk.Entry(self.expense_input)
+        self.value_entry = tk.Entry(self.expense_input)
+        self.colour_entry = tk.Entry(self.expense_input)
+
+        # just for now!!!, saves me entering it in every time
+        self.name_entry.insert("0", "train")
+        self.value_entry.insert("0", "130")
+        self.colour_entry.insert("0", "red")
+
+        self.name_label.grid(row=0, column=0)
+        self.value_label.grid(row=0, column=1)
+        self.colour_label.grid(row=0, column=2)
+        self.name_entry.grid(row=1, column=0)
+        self.value_entry.grid(row=1, column=1)
+        self.colour_entry.grid(row=1, column=2)
+
+        self.input_button = tk.Button(self.expense_input, text="Input", command=self.newExpense)
+        self.input_button.grid(row=2, column=0, columnspan=3)
+
         """tab3"""
         self.help_label = tk.Label(self.tab3)
         self.help_label.pack(side="left", anchor="nw")
@@ -168,7 +193,9 @@ class MyWindow(tk.Tk):
         self.label_want_val.config(text=(7 - len(want_text))*"\u2007" + want_text)
         self.label_use_val.config(text=(7 - len(use_text))*"\u2007" + use_text)
 
-        
+    def newExpense(self):
+        new_expense = [self.name_entry.get(), self.value_entry.get(), self.colour_entry.get()]
+        self.expenses_tree.addItem(new_expense)
 
 if __name__ == "__main__":
     app = MyWindow()

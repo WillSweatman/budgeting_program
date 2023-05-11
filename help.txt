@@ -6,4 +6,6 @@ Handy tips:
 
     Within the treeview, as well as sorting by the column values,
     you can drag and drop your individual exenses into whatever
-    order you like.
+    order you like. The original order is tracked by the iid column
+    so you can always sort via that column to get back to where you
+    started.
