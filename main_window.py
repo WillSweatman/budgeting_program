@@ -3,16 +3,25 @@ from tkinter import ttk
 import numpy as np
 import os
 
-# my own classes
+# my own classes/objects
 from treeview_class import CustomTreeview
+#from style_file import set_custom_style
 
 class MyWindow(tk.Tk):
     def __init__(self):
         super().__init__()
         
         self.title("Budgeting App")
-        self.geometry("400x400")
-        width=400
+        width=500
+        self.geometry(str(width)+"x"+str(width))
+
+        # Set the custom style
+        #custom_style = set_custom_style()
+
+        # in the mean time
+        red = "#e76f51"
+        amber = "#f4a261"
+        green = "#2a9d8f"
         
         self.notebook = ttk.Notebook(self)
         self.notebook.pack(side=tk.TOP, fill='both', expand=True)
@@ -53,20 +62,20 @@ class MyWindow(tk.Tk):
                                       "\nNeed shouldnt breach 50, and dictate the others")
         self.label_scrolls.grid(row=0, column=1)
 
-        self.label_need = tk.Label(ratios, text="\nNeed", bg="red", fg="white")
-        self.label_want = tk.Label(ratios, text="\nWant", bg="orange", fg="white")
-        self.label_use = tk.Label(ratios, text="\nUse", bg="green", fg="white")
+        self.label_need = tk.Label(ratios, text="\nNeed", bg=red, fg="white")
+        self.label_want = tk.Label(ratios, text="\nWant", bg=amber, fg="white")
+        self.label_use = tk.Label(ratios, text="\nUse", bg=green, fg="white")
 
-        self.scroll_need = tk.Scale(ratios, from_=0, to=100, orient=tk.HORIZONTAL, bg="red",
+        self.scroll_need = tk.Scale(ratios, from_=0, to=100, orient=tk.HORIZONTAL, bg=red,
                                     command=lambda *args: self.updateScrollbars("need", *args))
-        self.scroll_want = tk.Scale(ratios, from_=0, to=100, orient=tk.HORIZONTAL, bg="orange",
+        self.scroll_want = tk.Scale(ratios, from_=0, to=100, orient=tk.HORIZONTAL, bg=amber,
                                     command=lambda *args: self.updateScrollbars("want", *args))
-        self.scroll_use = tk.Scale(ratios, from_=0, to=100, orient=tk.HORIZONTAL, bg="green",
+        self.scroll_use = tk.Scale(ratios, from_=0, to=100, orient=tk.HORIZONTAL, bg=green,
                                     command=lambda *args: self.updateScrollbars("use", *args))
         
-        self.label_need_val = tk.Label(ratios, text="\u2007"*7, bg="red", fg="white")
-        self.label_want_val = tk.Label(ratios, text="\u2007"*7, bg="orange", fg="white")
-        self.label_use_val = tk.Label(ratios, text="\u2007"*7, bg="green", fg="white")
+        self.label_need_val = tk.Label(ratios, text="\u2007"*7, bg=red, fg="white")
+        self.label_want_val = tk.Label(ratios, text="\u2007"*7, bg=amber, fg="white")
+        self.label_use_val = tk.Label(ratios, text="\u2007"*7, bg=green, fg="white")
 
         self.label_need.grid(row=1, column=0)
         self.label_want.grid(row=2, column=0)
