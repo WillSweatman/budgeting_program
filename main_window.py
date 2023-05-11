@@ -15,8 +15,9 @@ class MyWindow(tk.Tk):
         super().__init__()
         
         self.title("Budgeting App")
-        self.width=500
-        self.geometry(str(self.width)+"x"+str(self.width))
+        self.width = 800
+        self.height = 600
+        self.geometry(str(self.width)+"x"+str(self.height)+"+200+25")
         self.protocol("WM_DELETE_WINDOW", self.on_closing)
 
         # Set the custom style (not implemented)
@@ -43,7 +44,9 @@ class MyWindow(tk.Tk):
         self.tab3 = tk.Frame(self.notebook)
         self.notebook.add(self.tab3, text='Plot')
         self.tab4 = tk.Frame(self.notebook, bg=self.blue)
-        self.notebook.add(self.tab4, text='Help')
+        self.notebook.add(self.tab4, text='Hints')
+        self.tab5 = tk.Frame(self.notebook, bg=self.blue)
+        self.notebook.add(self.tab5, text='Help')
 
         # filling tabs with content
         self.tab1Content()
@@ -67,7 +70,7 @@ class MyWindow(tk.Tk):
         self.loan_check = tk.Checkbutton(self.core, bg=self.blue, text="Student Loan", variable=self.loan_check_var)
         self.loan_check.pack()
         
-        self.button = tk.Button(self.core, bg=self.blue, text="Tax me", command=self.onClick)
+        self.button = tk.Button(self.core, bg=self.blue, text="Tax me", command=self.onClickTax)
         self.button.pack()
 
         self.label_monthly = tk.Label(self.core, text="", bg=self.dark2, fg="white")
@@ -116,7 +119,6 @@ class MyWindow(tk.Tk):
             r.grid_rowconfigure(1, weight=1)
             r.grid_columnconfigure(1, weight=1)
 
-
     def tab2Content(self):
         self.expenses_tree = CustomTreeview(self.tab2, self.width)
         self.expenses_tree.pack()
@@ -148,8 +150,10 @@ class MyWindow(tk.Tk):
 
     def tab3Content(self):
 
-        self.variables_frame = tk.Frame(self.tab3, bg=self.blue)
-        self.variables_frame.pack(side=tk.LEFT, fill="both", expand=True)
+        self.onClickTax()
+
+        self.variables_frame = tk.Frame(self.tab3, bg=self.blue, width=100)
+        self.variables_frame.pack(side=tk.LEFT)
 
         self.plot_button = tk.Button(self.variables_frame, bg=self.blue, text="Plot", command=self.plotData)
         self.plot_button.pack(side=tk.LEFT)
@@ -168,13 +172,16 @@ class MyWindow(tk.Tk):
         # ive opted to have it as a .txt file and open it so that
         # its easier to edit and it can be accessed without running
         # the program every time
-        path = os.path.dirname(__file__) + "\help.txt"
+        path = os.path.dirname(__file__) + "\hints.txt"
         with open(path, "r") as f:
             text = f.read()
 
         self.help_label.config(text=text, bg=self.blue, fg="white", justify="left")
-  
-    def onClick(self):
+
+    def tab5Content(self):
+        print("Not implemented")
+
+    def onClickTax(self):
         self.init_salary = float(self.salary_entry.get())
 
         self.monthly_salary = self.allTaxes()
@@ -186,31 +193,33 @@ class MyWindow(tk.Tk):
         self.label_monthly.config(bg=self.blue)
 
     def allTaxes(self, *args):
-        salary = 0
+        pre_salary = 0
         if len(args) == 0:
-            salary = self.init_salary
+            pre_salary = self.init_salary
         else:
-            salary = args[0]
+            pre_salary = args[0]
+
+        salary = pre_salary
 
         # basic income bands
-        salary -= self.singleTax(12571, 0.20)
-        salary -= self.singleTax(50271, 0.20) # rolling calc, so 20+20=40% tax
-        salary -= self.singleTax(125140, 0.05) # dito, 20+20+5=45% tax
+        salary -= self.singleTax(pre_salary, 12571, 0.20)
+        salary -= self.singleTax(pre_salary, 50271, 0.20) # rolling calc, so 20+20=40% tax
+        salary -= self.singleTax(pre_salary, 125140, 0.05) # dito, 20+20+5=45% tax
 
         # national insurance
-        salary -= self.singleTax(1048*12, 0.12)
+        salary -= self.singleTax(pre_salary, 1048*12, 0.12)
 
         # student loan
         if self.loan_check_var.get():
-            salary -= self.singleTax(27295, 0.09)
+            salary -= self.singleTax(pre_salary, 27295, 0.09)
 
         return np.round(salary/12, 2)
 
-    def singleTax(self, band, rate):
-        if self.init_salary < band:
+    def singleTax(self, total, band, rate):
+        if total < band:
             return 0
         
-        return (self.init_salary - band) * rate
+        return (total - band) * rate
 
     def updateScrollbars(self, *args):
         #print(args) # (scrollbar name, scrollbar attempted value)
@@ -257,6 +266,9 @@ class MyWindow(tk.Tk):
         ax.set_title("Plot "+str(len(plt.get_fignums())))
         ax.set_xlabel("Years")
         ax.set_ylabel("Salary (K)")
+        ax.set_xlim(0, max(x))
+        ax.set_ylim(0)
+        plt.tight_layout()
 
         # Clear the plot frame
         for widget in self.plot_frame.winfo_children():
@@ -268,14 +280,14 @@ class MyWindow(tk.Tk):
         canvas.get_tk_widget().pack()
 
     def runSim(self, years):
+
         x = [0]
         y_pre_tax = [self.init_salary]
         y = [self.allTaxes(y_pre_tax[-1])*12]
 
         for i in range(1, years+1):
             x.append(i)
-            y_pre_tax.append(y_pre_tax[-1]*uniform(1.03, 1.10))
-
+            y_pre_tax.append(y_pre_tax[-1]*uniform(1.03, 1.09))
             y.append(self.allTaxes(y_pre_tax[-1])*12)
             
         return x, y_pre_tax, y
