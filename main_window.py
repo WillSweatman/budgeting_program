@@ -5,6 +5,8 @@ import os
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from random import uniform
+import re
+
 
 # my own classes/objects
 from treeview_class import CustomTreeview
@@ -53,6 +55,8 @@ class MyWindow(tk.Tk):
         self.tab2Content()
         self.tab3Content()
         self.tab4Content()
+        #self.tab5Content()
+
 
     def tab1Content(self):
         self.core = tk.Frame(self.tab1, bg=self.dark2)
@@ -150,8 +154,6 @@ class MyWindow(tk.Tk):
 
     def tab3Content(self):
 
-        self.onClickTax()
-
         self.variables_frame = tk.Frame(self.tab3, bg=self.blue, width=100)
         self.variables_frame.pack(side=tk.LEFT)
 
@@ -182,7 +184,12 @@ class MyWindow(tk.Tk):
         print("Not implemented")
 
     def onClickTax(self):
-        self.init_salary = float(self.salary_entry.get())
+
+        value = self.validFloat(self.salary_entry.get())
+        if  value == None:
+            return
+
+        self.init_salary = value
 
         self.monthly_salary = self.allTaxes()
         
@@ -253,17 +260,27 @@ class MyWindow(tk.Tk):
         self.label_use_val.config(text=(7 - len(use_text))*"\u2007" + use_text)
 
     def newExpense(self):
-        new_expense = [self.name_entry.get(), self.value_entry.get(), self.colour_entry.get()]
+        value = self.validFloat(self.value_entry.get())
+        colour = self.validColour(self.colour_entry.get())
+        if value == None:
+            return
+        if colour == None:
+            tk.messagebox.showerror("Error", "Not a valid colour, try hex (#123456) or simple lowercase words.")
+            return
+        
+        new_expense = [self.name_entry.get(), value, colour]
         self.expenses_tree.addItem(new_expense)
 
     def plotData(self):
+
+        plt.close()
 
         x, y_pre_tax, y = self.runSim(20)
 
         fig, ax = plt.subplots()
         ax.plot(x, y_pre_tax)
         ax.plot(x, y)
-        ax.set_title("Plot "+str(len(plt.get_fignums())))
+        ax.set_title("Plot")
         ax.set_xlabel("Years")
         ax.set_ylabel("Salary (K)")
         ax.set_xlim(0, max(x))
@@ -291,6 +308,26 @@ class MyWindow(tk.Tk):
             y.append(self.allTaxes(y_pre_tax[-1])*12)
             
         return x, y_pre_tax, y
+
+    def validColour(self, colour):
+        if len(colour) == 0:
+            return
+        if colour[0] == "#":
+            pattern = r'^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$'
+            if bool(re.match(pattern, colour)):
+                return colour
+            return
+        if colour in ["red", "orange", "yellow", "green", "blue", "purple", "pink", "black", "grey", "brown"]:
+            return colour
+        return
+
+    def validFloat(self, raw_value):
+        try:
+            value = float(raw_value)
+            return value
+        except ValueError:
+            tk.messagebox.showerror("Error", "Input must be a number.")
+            return
 
     def on_closing(self):
         
