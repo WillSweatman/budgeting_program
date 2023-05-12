@@ -5,7 +5,7 @@ import os
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from random import uniform
-import re
+from random import choice
 
 
 # my own classes/objects
@@ -132,7 +132,7 @@ class MyWindow(tk.Tk):
 
         self.name_label = tk.Label(self.expense_input, text="Name:")
         self.value_label = tk.Label(self.expense_input, text="Value (Monthly):")
-        self.colour_label = tk.Label(self.expense_input, text="Colour:")
+        self.colour_label = tk.Label(self.expense_input, text="Colour (Empty = Random):")
         self.name_entry = tk.Entry(self.expense_input)
         self.value_entry = tk.Entry(self.expense_input)
         self.colour_entry = tk.Entry(self.expense_input)
@@ -309,7 +309,7 @@ class MyWindow(tk.Tk):
     def validColour(self, colour):
         # is there an input
         if not colour:
-            return None
+            return "#" + "".join(choice("0123456789abcdef") for _ in range(6))
         # is the input a valid colour for tkinter
         try:
             dummy = tk.Label(self, bg=colour)
