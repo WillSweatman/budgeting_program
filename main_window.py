@@ -262,10 +262,7 @@ class MyWindow(tk.Tk):
     def newExpense(self):
         value = self.validFloat(self.value_entry.get())
         colour = self.validColour(self.colour_entry.get())
-        if value == None:
-            return
-        if colour == None:
-            tk.messagebox.showerror("Error", "Not a valid colour, try hex (#123456) or simple lowercase words.")
+        if None in [value, colour]:
             return
         
         new_expense = [self.name_entry.get(), value, colour]
@@ -310,16 +307,18 @@ class MyWindow(tk.Tk):
         return x, y_pre_tax, y
 
     def validColour(self, colour):
-        if len(colour) == 0:
-            return
-        if colour[0] == "#":
-            pattern = r'^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$'
-            if bool(re.match(pattern, colour)):
-                return colour
-            return
-        if colour in ["red", "orange", "yellow", "green", "blue", "purple", "pink", "black", "grey", "brown"]:
+        # is there an input
+        if not colour:
+            return None
+        # is the input a valid colour for tkinter
+        try:
+            dummy = tk.Label(self, bg=colour)
+            dummy.destroy()
             return colour
-        return
+        except Exception:
+            tk.messagebox.showerror("Error", "Not a valid colour!\n" +
+                                    "Try a hex code (#123456) or colour name (red).")
+            return None
 
     def validFloat(self, raw_value):
         try:
@@ -327,7 +326,7 @@ class MyWindow(tk.Tk):
             return value
         except ValueError:
             tk.messagebox.showerror("Error", "Input must be a number.")
-            return
+            return None
 
     def on_closing(self):
         
