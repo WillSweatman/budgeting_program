@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
+import numpy as np
 
 
 class CustomTreeview(ttk.Frame):
@@ -79,6 +80,7 @@ class CustomTreeview(ttk.Frame):
         self.dragged_iid = None
 
     def addItem(self, new_item):
+        new_item[-2] = "{:.2f}".format(new_item[-2])
         self.tree.insert("", "end", text=len(self.tree.get_children()), values=new_item, tags=new_item[-1])
         self.tree.tag_configure(new_item[-1], background=new_item[-1])
         
@@ -91,7 +93,7 @@ class CustomTreeview(ttk.Frame):
             value = float(self.tree.item(item, "values")[column_idx])
             total += value
 
-        return total
+        return "{:.2f}".format(total)
     
     def modeColumn(self, column_idx):
         # find frequency of each value

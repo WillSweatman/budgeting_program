@@ -16,3 +16,7 @@ Handy tips:
     If near the bottom of the treeview, and wanting to send a selected
     item to the top, drag it down to the bottom and it will jump to the
     top.
+
+    You can click the Random button to keep generating a random colour
+    in order find one you like. Alternatively, you can leave the colour
+    entry empty and a random colour ill be selected for you.
