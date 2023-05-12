@@ -98,11 +98,11 @@ class MyWindow(tk.Tk):
         self.label_want = tk.Label(ratios_2, text="\nWant", bg=self.amber, fg="white")
         self.label_use = tk.Label(ratios_3, text="\nUse \u2007", bg=self.green, fg="white")
 
-        self.scroll_need = tk.Scale(ratios_1, from_=0, to=100, orient=tk.HORIZONTAL, bg=self.red,
+        self.scroll_need = tk.Scale(ratios_1, from_=0, to=100, resolution=0.1, orient=tk.HORIZONTAL, bg=self.red,
                                     command=lambda *args: self.updateScrollbars("need", *args))
-        self.scroll_want = tk.Scale(ratios_2, from_=0, to=100, orient=tk.HORIZONTAL, bg=self.amber,
+        self.scroll_want = tk.Scale(ratios_2, from_=0, to=100, resolution=0.1, orient=tk.HORIZONTAL, bg=self.amber,
                                     command=lambda *args: self.updateScrollbars("want", *args))
-        self.scroll_use = tk.Scale(ratios_3, from_=0, to=100, orient=tk.HORIZONTAL, bg=self.green,
+        self.scroll_use = tk.Scale(ratios_3, from_=0, to=100, resolution=0.1, orient=tk.HORIZONTAL, bg=self.green,
                                     command=lambda *args: self.updateScrollbars("use", *args))
         
         self.label_need_val = tk.Label(ratios_1, text="\u2007"*7, bg=self.red, fg="white")
@@ -168,6 +168,11 @@ class MyWindow(tk.Tk):
 
         self.input_button = tk.Button(self.expense_input, text="Input", command=self.newExpense)
         self.input_button.grid(row=2, column=0, columnspan=3)
+
+        # button to send over the expenses total to "need" on tab1
+        self.send_need_button = tk.Button(self.tab2, text="Set 'Need' in Salary and Ratios to Sum(Values)",
+                                          command=lambda: self.updateScrollbars("need", 100*float(self.value_stat.cget("text")[13:])/self.monthly_salary, "outside"))
+        self.send_need_button.pack()
 
         # just for now!!!, saves me entering it in every time
         self.name_entry.insert("0", "train")
@@ -254,7 +259,15 @@ class MyWindow(tk.Tk):
         #print(args) # (scrollbar name, scrollbar attempted value)
         # scrollbar.get() is quick enough to not worry about frequent calling
 
-        need = float(self.scroll_need.get())
+        # for passign in an outisde value
+        need = 0
+        if len(args) > 2 and args[2] == "outside":
+            need = args[1]
+            self.scroll_need.set(need)
+            self.scroll_want.set(0)
+            self.scroll_use.set(100 - float(self.scroll_need.get()))
+        else:
+            need = float(self.scroll_need.get())
         want_use_string = ["want", "use"]
         want_use_widget = [self.scroll_want, self.scroll_use]
         if args[0] == "need":

@@ -4,7 +4,7 @@ import numpy as np
 
 
 class CustomTreeview(ttk.Frame):
-    def __init__(self, root, width=400, items=[["tube fair", 5, "#ee8959"]]*5):
+    def __init__(self, root, width=400, items=[]):
         super().__init__(root)
 
         # Create Treeview with 3 columns
