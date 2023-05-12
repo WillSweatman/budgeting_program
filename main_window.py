@@ -124,9 +124,25 @@ class MyWindow(tk.Tk):
             r.grid_columnconfigure(1, weight=1)
 
     def tab2Content(self):
+        # treeview
         self.expenses_tree = CustomTreeview(self.tab2, self.width)
         self.expenses_tree.pack()
 
+        # treeview stats
+        self.tree_stats = tk.Frame(self.tab2, width=self.width, bg=self.dark)
+        self.tree_stats.pack()
+
+        self.iid_stat = tk.Label(self.tree_stats, text="Population = ", justify="left", bg=self.blue)
+        self.name_stat = tk.Label(self.tree_stats, text="Mode(Name) = ", justify="left", bg=self.amber)
+        self.value_stat = tk.Label(self.tree_stats, text="Sum(Value) = ", justify="left", bg=self.red)
+        self.colour_stat = tk.Label(self.tree_stats, text="Mode(Colour) = ", justify="left", bg=self.green)
+
+        self.iid_stat.grid(row=0, column=0, sticky="nsew")
+        self.name_stat.grid(row=0, column=1, sticky="nsew")
+        self.value_stat.grid(row=0, column=2, sticky="nsew")
+        self.colour_stat.grid(row=0, column=3, sticky="nsew")
+
+        # treeview empty
         self.expense_input = tk.Frame(self.tab2)
         self.expense_input.pack()
 
@@ -144,20 +160,19 @@ class MyWindow(tk.Tk):
         self.value_entry = tk.Entry(self.expense_input, bg="white")
         self.colour_entry = tk.Entry(self.expense_input, bg="white")
 
-        # just for now!!!, saves me entering it in every time
-        self.name_entry.insert("0", "train")
-        self.value_entry.insert("0", "130")
-        self.colour_entry.insert("0", "#e9c46a")
-
         self.name_label.grid(row=0, column=0)
         self.value_label.grid(row=0, column=1)
-
         self.name_entry.grid(row=1, column=0)
         self.value_entry.grid(row=1, column=1)
         self.colour_entry.grid(row=1, column=2)
 
         self.input_button = tk.Button(self.expense_input, text="Input", command=self.newExpense)
         self.input_button.grid(row=2, column=0, columnspan=3)
+
+        # just for now!!!, saves me entering it in every time
+        self.name_entry.insert("0", "train")
+        self.value_entry.insert("0", "130")
+        self.colour_entry.insert("0", "#e9c46a")
 
     def tab3Content(self):
 
@@ -276,9 +291,16 @@ class MyWindow(tk.Tk):
         new_expense = [self.name_entry.get(), value, colour]
         self.expenses_tree.addItem(new_expense)
 
+        # clear entry boxes ready for new entry
         self.name_entry.delete(0, tk.END)
         self.value_entry.delete(0, tk.END)
         self.colour_entry.delete(0, tk.END)
+
+        # calculate stats
+        self.iid_stat.configure(text="Population = "+str(len(self.expenses_tree.tree.get_children())))
+        self.name_stat.configure(text="Mode(Name) = "+str(self.expenses_tree.modeColumn(-3)))
+        self.value_stat.configure(text="Sum(Value) = "+str(self.expenses_tree.sumColumn(-2)))
+        self.colour_stat.configure(text="Mode(Colour) = "+str(self.expenses_tree.modeColumn(-1)))
 
     def plotData(self):
 

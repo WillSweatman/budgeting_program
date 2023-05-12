@@ -39,7 +39,6 @@ class CustomTreeview(ttk.Frame):
             self.tree.insert("", "end", text=i, values=(item), tags=item[-1])
             self.tree.tag_configure(item[-1], background=item[-1])
 
-        
         # Pack the widgets into the frame
         self.tree.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
@@ -85,6 +84,31 @@ class CustomTreeview(ttk.Frame):
         
         #scroll down to see newly added item
         self.tree.see(self.tree.get_children()[-1])
+
+    def sumColumn(self, column_idx):
+        total = 0
+        for item in self.tree.get_children():
+            value = float(self.tree.item(item, "values")[column_idx])
+            total += value
+
+        return total
+    
+    def modeColumn(self, column_idx):
+        # find frequency of each value
+        freq_dict = {}
+        for item in self.tree.get_children():
+            value = self.tree.item(item, "values")[column_idx]
+            freq_dict[value] = freq_dict.get(value, 0) + 1
+
+        # Find the mode of column 2
+        mode_value = None
+        mode_count = 0
+        for value, count in freq_dict.items():
+            if count > mode_count:
+                mode_value = value
+                mode_count = count
+
+        return mode_value
         
 
 
