@@ -83,6 +83,9 @@ class CustomTreeview(ttk.Frame):
         self.tree.insert("", "end", text=len(self.tree.get_children()), values=new_item, tags=new_item[-1])
         self.tree.tag_configure(new_item[-1], background=new_item[-1])
         
+        #scroll down to see newly added item
+        self.tree.see(self.tree.get_children()[-1])
+        
 
 
 if __name__ == "__main__":
