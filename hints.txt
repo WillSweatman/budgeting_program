@@ -1,22 +1,40 @@
+Starting out:
+
+    First, add your salary into the top entry box of the first tab and select whether you have a student loan.
+
+    Next, click the 'Tax me' button. This will return your post-tax monthly salary. This can then be used in the scrollbars below.
+
+    You can play around with the scrollbars to see how prioritising different parts of your spending splits your salary. The three
+    catagories are defined as followed:
+
+        Need - Things you have to pay for e.g. rent, groceries...
+        Want - Things you would like, but are more flexible. This could
+               include cinema tickets, eating food out...
+         Use - Getting your money to work. This could be savings, 
+               investing, and anything else that has a big benefit.
+
+    Once youve had a look at how these sliders affect eachother, move over to the next tab - 'Expenses'. This tab allows you to enter
+    in a list of your outgoings, made up of a Name, Value and Colour.
+
+    Below the list, there will be stats that appear, giving you feedback on aspects of your spending.
+
+    Once youve entered in your expenses, hit the button marked 'Set 'Need' in Salary and Ratios to Sum(Values)'. This will
+    set the sum of your expenses to your need catagory on the previous tab. You can now go back there are use the bottom two
+    scrollers to see how much money you have avaibale for Want and Use.
+
+
 Handy tips:
 
-    You can click within the scrollbars, either side of the slider,
-    to make fine adjustments to your ratios.
+    You can click within the scrollbars, either side of the slider, to make fine adjustments to your ratios.
 
-    Within the treeview, as well as sorting by the column values,
-    you can drag and drop your individual exenses into whatever
-    order you like. The original order is tracked by the iid column
-    so you can always sort via that column to get back to where you
+    Within the treeview, as well as sorting by the column values, you can drag and drop your individual exenses into whatever
+    order you like. The original order is tracked by the iid column so you can always sort via that column to get back to where you
     started.
 
-    Use the Colour input in the expenses treeview to group different
-    expense types. For example, red could signify transport, green
+    Use the Colour input in the expenses treeview to group different expense types. For example, red could signify transport, green
     shopping, and so on.
 
-    If near the bottom of the treeview, and wanting to send a selected
-    item to the top, drag it down to the bottom and it will jump to the
-    top.
+    If near the bottom of the treeview, and wanting to send a selected item to the top, drag it down to the bottom and it will jump to the top.
 
-    You can click the Random button to keep generating a random colour
-    in order find one you like. Alternatively, you can leave the colour
+    You can click the Random button to keep generating a random colour in order find one you like. Alternatively, you can leave the colour
     entry empty and a random colour ill be selected for you.

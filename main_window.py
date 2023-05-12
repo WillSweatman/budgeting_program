@@ -41,7 +41,7 @@ class MyWindow(tk.Tk):
         self.notebook.pack(side=tk.TOP, fill='both', expand=True)
         self.tab1 = tk.Frame(self.notebook, bg=self.dark)
         self.notebook.add(self.tab1, text='Salary and Ratios')
-        self.tab2 = tk.Frame(self.notebook)
+        self.tab2 = tk.Frame(self.notebook, bg=self.dark)
         self.notebook.add(self.tab2, text='Expenses')
         self.tab3 = tk.Frame(self.notebook)
         self.notebook.add(self.tab3, text='Plot')
@@ -143,16 +143,16 @@ class MyWindow(tk.Tk):
         self.colour_stat.grid(row=0, column=3, sticky="nsew")
 
         # treeview empty
-        self.expense_input = tk.Frame(self.tab2)
+        self.expense_input = tk.Frame(self.tab2, bg=self.dark)
         self.expense_input.pack()
 
-        self.name_label = tk.Label(self.expense_input, text="Name")
-        self.value_label = tk.Label(self.expense_input, text="Value (Monthly)")
+        self.name_label = tk.Label(self.expense_input, text="Name", bg=self.dark2, fg="white")
+        self.value_label = tk.Label(self.expense_input, text="Value (Monthly)", bg=self.dark2, fg="white")
 
-        self.colour_frame = tk.Frame(self.expense_input)
+        self.colour_frame = tk.Frame(self.expense_input, bg=self.dark)
         self.colour_frame.grid(row=0, column=2)
-        self.colour_label = tk.Label(self.colour_frame, text="Colour")
-        self.colour_button = tk.Button(self.colour_frame, text="Random", command=self.randomColour)
+        self.colour_label = tk.Label(self.colour_frame, text="Colour", bg=self.dark2, fg="white")
+        self.colour_button = tk.Button(self.colour_frame, text="Random", bg=self.dark2, fg="white", command=self.randomColour)
         self.colour_label.grid(row=0, column=0)
         self.colour_button.grid(row=0, column=1)
 
@@ -166,11 +166,11 @@ class MyWindow(tk.Tk):
         self.value_entry.grid(row=1, column=1)
         self.colour_entry.grid(row=1, column=2)
 
-        self.input_button = tk.Button(self.expense_input, text="Input", command=self.newExpense)
+        self.input_button = tk.Button(self.expense_input, text="Input", bg=self.dark2, fg="white", command=self.newExpense)
         self.input_button.grid(row=2, column=0, columnspan=3)
 
         # button to send over the expenses total to "need" on tab1
-        self.send_need_button = tk.Button(self.tab2, text="Set 'Need' in Salary and Ratios to Sum(Values)",
+        self.send_need_button = tk.Button(self.tab2, text="Set 'Need' in Salary and Ratios to Sum(Values)", bg=self.dark2, fg="white",
                                           command=lambda: self.updateScrollbars("need", 100*float(self.value_stat.cget("text")[13:])/self.monthly_salary, "outside"))
         self.send_need_button.pack()
 
@@ -195,8 +195,11 @@ class MyWindow(tk.Tk):
         canvas.get_tk_widget().pack()
 
     def tab4Content(self):
-        self.help_label = tk.Label(self.tab4)
-        self.help_label.pack(side="left", anchor="nw")
+        self.scroll_hints = tk.Scrollbar(self.tab4)
+        self.scroll_hints.pack(side=tk.RIGHT, fill=tk.Y)
+
+        self.hints = tk.Text(self.tab4, yscrollcommand=self.scroll_hints.set, bg=self.dark, fg="white", font="TkDefaultFont")
+        self.hints.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
         # ive opted to have it as a .txt file and open it so that
         # its easier to edit and it can be accessed without running
@@ -205,7 +208,9 @@ class MyWindow(tk.Tk):
         with open(path, "r") as f:
             text = f.read()
 
-        self.help_label.config(text=text, bg=self.blue, fg="white", justify="left")
+        self.hints.insert(tk.END, text)
+        self.hints.configure(state="disabled")
+        self.scroll_hints.config(command=self.hints.yview)
 
     def tab5Content(self):
         print("Not implemented")
@@ -259,7 +264,7 @@ class MyWindow(tk.Tk):
         #print(args) # (scrollbar name, scrollbar attempted value)
         # scrollbar.get() is quick enough to not worry about frequent calling
 
-        # for passign in an outisde value
+        # for passing in an outside value
         need = 0
         if len(args) > 2 and args[2] == "outside":
             need = args[1]
