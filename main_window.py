@@ -130,12 +130,19 @@ class MyWindow(tk.Tk):
         self.expense_input = tk.Frame(self.tab2)
         self.expense_input.pack()
 
-        self.name_label = tk.Label(self.expense_input, text="Name:")
-        self.value_label = tk.Label(self.expense_input, text="Value (Monthly):")
-        self.colour_label = tk.Label(self.expense_input, text="Colour (Empty = Random):")
-        self.name_entry = tk.Entry(self.expense_input)
-        self.value_entry = tk.Entry(self.expense_input)
-        self.colour_entry = tk.Entry(self.expense_input)
+        self.name_label = tk.Label(self.expense_input, text="Name")
+        self.value_label = tk.Label(self.expense_input, text="Value (Monthly)")
+
+        self.colour_frame = tk.Frame(self.expense_input)
+        self.colour_frame.grid(row=0, column=2)
+        self.colour_label = tk.Label(self.colour_frame, text="Colour")
+        self.colour_button = tk.Button(self.colour_frame, text="Random", command=self.randomColour)
+        self.colour_label.grid(row=0, column=0)
+        self.colour_button.grid(row=0, column=1)
+
+        self.name_entry = tk.Entry(self.expense_input, bg="white")
+        self.value_entry = tk.Entry(self.expense_input, bg="white")
+        self.colour_entry = tk.Entry(self.expense_input, bg="white")
 
         # just for now!!!, saves me entering it in every time
         self.name_entry.insert("0", "train")
@@ -144,7 +151,7 @@ class MyWindow(tk.Tk):
 
         self.name_label.grid(row=0, column=0)
         self.value_label.grid(row=0, column=1)
-        self.colour_label.grid(row=0, column=2)
+
         self.name_entry.grid(row=1, column=0)
         self.value_entry.grid(row=1, column=1)
         self.colour_entry.grid(row=1, column=2)
@@ -260,6 +267,7 @@ class MyWindow(tk.Tk):
         self.label_use_val.config(text=(7 - len(use_text))*"\u2007" + use_text)
 
     def newExpense(self):
+        self.colour_entry.configure(bg="white")
         value = self.validFloat(self.value_entry.get())
         colour = self.validColour(self.colour_entry.get())
         if None in [value, colour]:
@@ -267,6 +275,10 @@ class MyWindow(tk.Tk):
         
         new_expense = [self.name_entry.get(), value, colour]
         self.expenses_tree.addItem(new_expense)
+
+        self.name_entry.delete(0, tk.END)
+        self.value_entry.delete(0, tk.END)
+        self.colour_entry.delete(0, tk.END)
 
     def plotData(self):
 
@@ -305,6 +317,12 @@ class MyWindow(tk.Tk):
             y.append(self.allTaxes(y_pre_tax[-1])*12)
             
         return x, y_pre_tax, y
+
+    def randomColour(self):
+        colour = "#" + "".join(choice("0123456789abcdef") for _ in range(6))
+        self.colour_entry.configure(bg=colour)
+        self.colour_entry.delete(0, tk.END)
+        self.colour_entry.insert("0", colour)
 
     def validColour(self, colour):
         # is there an input
