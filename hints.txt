@@ -1,6 +1,6 @@
 Starting out:
 
-    First, add your salary into the top entry box of the first tab and select whether you have a student loan.
+    First, add your salary into the top entry box of the first tab 'Salary and Ratios' and select whether you have a student loan.
 
     Next, click the 'Tax me' button. This will return your post-tax monthly salary. This can then be used in the scrollbars below.
 

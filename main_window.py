@@ -66,6 +66,7 @@ class MyWindow(tk.Tk):
         self.label_title.pack()
 
         self.init_salary = 0
+        self.monthly_salary = 0
         self.salary_entry = tk.Entry(self.core, bg=self.blue, fg="white")
         self.salary_entry.insert(0, "33000")
         self.salary_entry.pack()
@@ -156,9 +157,9 @@ class MyWindow(tk.Tk):
         self.colour_label.grid(row=0, column=0)
         self.colour_button.grid(row=0, column=1)
 
-        self.name_entry = tk.Entry(self.expense_input, bg="white")
-        self.value_entry = tk.Entry(self.expense_input, bg="white")
-        self.colour_entry = tk.Entry(self.expense_input, bg="white")
+        self.name_entry = tk.Entry(self.expense_input, bg=self.blue, fg = "white")
+        self.value_entry = tk.Entry(self.expense_input, bg=self.blue, fg = "white")
+        self.colour_entry = tk.Entry(self.expense_input, bg=self.blue, fg = "white")
 
         self.name_label.grid(row=0, column=0)
         self.value_label.grid(row=0, column=1)
@@ -171,7 +172,7 @@ class MyWindow(tk.Tk):
 
         # button to send over the expenses total to "need" on tab1
         self.send_need_button = tk.Button(self.tab2, text="Set 'Need' in Salary and Ratios to Sum(Values)", bg=self.dark2, fg="white",
-                                          command=lambda: self.updateScrollbars("need", 100*float(self.value_stat.cget("text")[13:])/self.monthly_salary, "outside"))
+                                          command=lambda: self.usingExpenses(float(self.value_stat.cget("text")[13:])))
         self.send_need_button.pack()
 
         # just for now!!!, saves me entering it in every time
@@ -300,7 +301,7 @@ class MyWindow(tk.Tk):
         self.label_use_val.config(text=(7 - len(use_text))*"\u2007" + use_text)
 
     def newExpense(self):
-        self.colour_entry.configure(bg="white")
+        self.colour_entry.configure(bg=self.blue, fg = "white")
         value = self.validFloat(self.value_entry.get())
         colour = self.validColour(self.colour_entry.get())
         if None in [value, colour]:
@@ -385,6 +386,17 @@ class MyWindow(tk.Tk):
         except ValueError:
             tk.messagebox.showerror("Error", "Input must be a number.")
             return None
+
+    def usingExpenses(self, expense_total):
+        if self.monthly_salary == 0:
+            tk.messagebox.showerror("Error", "No Monthly Salary entered.")
+            return
+
+        if expense_total > self.monthly_salary:
+            tk.messagebox.showerror("Error", "Expenses larger than Monthly Salary.")
+            return
+        
+        self.updateScrollbars("need", 100*expense_total/self.monthly_salary, "outside")
 
     def on_closing(self):
         
