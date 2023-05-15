@@ -20,8 +20,16 @@ class CustomTreeview(ttk.Frame):
         self.style.theme_use("clam")
         self.style.configure("Treeview", fieldbackground=blue)
 
+        # tab colours
+        self.style.configure("TNotebook", borderwidth=0, background=dark)
+        self.style.map("TNotebook.Tab",
+                       background=[("selected", teal2), ("!selected", teal)],
+                       foreground=[("selected", black), ("!selected", white)])
+        
         # stops the annoying dashed box around the selected notebook tab
-        self.style.configure("Tab", focuscolor=self.style.configure(".")["background"])
+        self.style.configure("TNotebook.Tab", focuscolor=teal2, bordercolor=teal)
+
+
 
         # Set column headings
         self.tree.column("#0", width=int(width/4)-5)
