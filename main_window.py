@@ -10,6 +10,8 @@ from random import choice
 
 # my own classes/objects
 from treeview_class import CustomTreeview
+from plot_tab import PlottingTab
+from custom_colours import *
 #from style_file import set_custom_style
 
 class MainWindow(tk.Tk):
@@ -24,91 +26,81 @@ class MainWindow(tk.Tk):
 
         # Set the custom style (not implemented)
         #custom_style = set_custom_style()
-
-        # in the mean time
-        self.dark = "#23404b"
-        self.dark2 = "#264653"
-        self.blue = "#488299"
-        self.red = "#e76f51"
-        self.red2 = "#e97c61"
-        self.amber = "#f4a261"
-        self.amber2 = "#efb366"
-        self.green = "#2a9d8f"
-        self.green2 = "#5aa786"
+        
         
         # creating notebook format
         self.notebook = ttk.Notebook(self)
         self.notebook.pack(side=tk.TOP, fill='both', expand=True)
-        self.tab1 = tk.Frame(self.notebook, bg=self.dark)
+        self.tab1 = tk.Frame(self.notebook, bg=dark)
         self.notebook.add(self.tab1, text='Salary and Ratios')
-        self.tab2 = tk.Frame(self.notebook, bg=self.dark)
+        self.tab2 = tk.Frame(self.notebook, bg=dark)
         self.notebook.add(self.tab2, text='Expenses')
         self.tab3 = tk.Frame(self.notebook)
         self.notebook.add(self.tab3, text='Plot')
-        self.tab4 = tk.Frame(self.notebook, bg=self.blue)
+        self.tab4 = tk.Frame(self.notebook, bg=blue)
         self.notebook.add(self.tab4, text='Hints')
-        self.tab5 = tk.Frame(self.notebook, bg=self.blue)
+        self.tab5 = tk.Frame(self.notebook, bg=blue)
         self.notebook.add(self.tab5, text='Help')
 
         # filling tabs with content
         self.tab1Content()
         self.tab2Content()
-        self.tab3Content()
+        self.tab1Content = PlottingTab(self.tab3, self.runSim, self.width)
         self.tab4Content()
         #self.tab5Content()
 
 
     def tab1Content(self):
-        self.core = tk.Frame(self.tab1, bg=self.dark2)
+        self.core = tk.Frame(self.tab1, bg=dark2)
         self.core.pack()
 
-        self.label_title = tk.Label(self.core, bg=self.blue, text="Enter Salary Below")
+        self.label_title = tk.Label(self.core, bg=blue, text="Enter Salary Below")
         self.label_title.pack()
 
         self.init_salary = 0
         self.monthly_salary = 0
-        self.salary_entry = tk.Entry(self.core, bg=self.blue, fg="white")
+        self.salary_entry = tk.Entry(self.core, bg=blue, fg="white")
         self.salary_entry.insert(0, "33000")
         self.salary_entry.pack()
 
         self.loan_check_var = tk.BooleanVar(value=True)
-        self.loan_check = tk.Checkbutton(self.core, bg=self.blue, text="Student Loan", variable=self.loan_check_var)
+        self.loan_check = tk.Checkbutton(self.core, bg=blue, text="Student Loan", variable=self.loan_check_var)
         self.loan_check.pack()
         
-        self.button = tk.Button(self.core, bg=self.blue, text="Tax me", command=self.onClickTax)
+        self.button = tk.Button(self.core, bg=blue, text="Tax me", command=self.onClickTax)
         self.button.pack()
 
-        self.label_monthly = tk.Label(self.core, text="", bg=self.dark2, fg="white")
+        self.label_monthly = tk.Label(self.core, text="", bg=dark2, fg="white")
         self.label_monthly.pack()
 
-        ratios = tk.Frame(self.tab1, bg=self.dark2)
+        ratios = tk.Frame(self.tab1, bg=dark2)
         ratios.pack()
 
-        self.label_scrolls = tk.Label(ratios, bg=self.dark2, fg="white", text="Need : Want : Use (Roughly 50:30:20)" + 
+        self.label_scrolls = tk.Label(ratios, bg=dark2, fg="white", text="Need : Want : Use (Roughly 50:30:20)" + 
                                       "\nNeed shouldnt breach 50, and dictate the others")
         self.label_scrolls.grid(row=0)
 
-        ratios_1 = tk.Frame(ratios, width=self.width/1.5, bg=self.red2)
+        ratios_1 = tk.Frame(ratios, width=self.width/1.5, bg=red2)
         ratios_1.grid(row=1, sticky="nsew")
-        ratios_2 = tk.Frame(ratios, width=self.width/1.5, bg=self.amber2)
+        ratios_2 = tk.Frame(ratios, width=self.width/1.5, bg=amber2)
         ratios_2.grid(row=2, sticky="nsew")
-        ratios_3 = tk.Frame(ratios, width=self.width/1.5, bg=self.green2)
+        ratios_3 = tk.Frame(ratios, width=self.width/1.5, bg=green2)
         ratios_3.grid(row=3, sticky="nsew")
 
-        self.label_need = tk.Label(ratios_1, text="\nNeed", bg=self.red, fg="white")
-        self.label_want = tk.Label(ratios_2, text="\nWant", bg=self.amber, fg="white")
-        self.label_use = tk.Label(ratios_3, text="\nUse \u2007", bg=self.green, fg="white")
+        self.label_need = tk.Label(ratios_1, text="\nNeed", bg=red, fg="white")
+        self.label_want = tk.Label(ratios_2, text="\nWant", bg=amber, fg="white")
+        self.label_use = tk.Label(ratios_3, text="\nUse \u2007", bg=green, fg="white")
 
-        self.scroll_need = tk.Scale(ratios_1, from_=0, to=100, resolution=0.1, orient=tk.HORIZONTAL, bg=self.red,
+        self.scroll_need = tk.Scale(ratios_1, from_=0, to=100, resolution=0.1, orient=tk.HORIZONTAL, bg=red,
                                     command=lambda *args: self.updateScrollbars("need", *args))
-        self.scroll_want = tk.Scale(ratios_2, from_=0, to=100, resolution=0.1, orient=tk.HORIZONTAL, bg=self.amber,
+        self.scroll_want = tk.Scale(ratios_2, from_=0, to=100, resolution=0.1, orient=tk.HORIZONTAL, bg=amber,
                                     command=lambda *args: self.updateScrollbars("want", *args))
-        self.scroll_use = tk.Scale(ratios_3, from_=0, to=100, resolution=0.1, orient=tk.HORIZONTAL, bg=self.green,
+        self.scroll_use = tk.Scale(ratios_3, from_=0, to=100, resolution=0.1, orient=tk.HORIZONTAL, bg=green,
                                     command=lambda *args: self.updateScrollbars("use", *args))
         
-        self.label_need_val = tk.Label(ratios_1, text="\u2007"*7, bg=self.red, fg="white")
-        self.label_want_val = tk.Label(ratios_2, text="\u2007"*7, bg=self.amber, fg="white")
-        self.label_use_val = tk.Label(ratios_3, text="\u2007"*7, bg=self.green, fg="white")
+        self.label_need_val = tk.Label(ratios_1, text="\u2007"*7, bg=red, fg="white")
+        self.label_want_val = tk.Label(ratios_2, text="\u2007"*7, bg=amber, fg="white")
+        self.label_use_val = tk.Label(ratios_3, text="\u2007"*7, bg=green, fg="white")
 
         self.label_need.grid(row=0, column=0)
         self.label_want.grid(row=0, column=0)
@@ -130,13 +122,13 @@ class MainWindow(tk.Tk):
         self.expenses_tree.pack()
 
         # treeview stats
-        self.tree_stats = tk.Frame(self.tab2, width=self.width, bg=self.dark)
+        self.tree_stats = tk.Frame(self.tab2, width=self.width, bg=dark)
         self.tree_stats.pack()
 
-        self.iid_stat = tk.Label(self.tree_stats, text="Population = ", justify="left", bg=self.blue)
-        self.name_stat = tk.Label(self.tree_stats, text="Mode(Name) = ", justify="left", bg=self.amber)
-        self.value_stat = tk.Label(self.tree_stats, text="Sum(Value) = ", justify="left", bg=self.red)
-        self.colour_stat = tk.Label(self.tree_stats, text="Mode(Colour) = ", justify="left", bg=self.green)
+        self.iid_stat = tk.Label(self.tree_stats, text="Population = ", justify="left", bg=blue)
+        self.name_stat = tk.Label(self.tree_stats, text="Mode(Name) = ", justify="left", bg=amber)
+        self.value_stat = tk.Label(self.tree_stats, text="Sum(Value) = ", justify="left", bg=red)
+        self.colour_stat = tk.Label(self.tree_stats, text="Mode(Colour) = ", justify="left", bg=green)
 
         self.iid_stat.grid(row=0, column=0, sticky="nsew")
         self.name_stat.grid(row=0, column=1, sticky="nsew")
@@ -144,22 +136,22 @@ class MainWindow(tk.Tk):
         self.colour_stat.grid(row=0, column=3, sticky="nsew")
 
         # treeview empty
-        self.expense_input = tk.Frame(self.tab2, bg=self.dark)
+        self.expense_input = tk.Frame(self.tab2, bg=dark)
         self.expense_input.pack()
 
-        self.name_label = tk.Label(self.expense_input, text="Name", bg=self.dark2, fg="white")
-        self.value_label = tk.Label(self.expense_input, text="Value (Monthly)", bg=self.dark2, fg="white")
+        self.name_label = tk.Label(self.expense_input, text="Name", bg=dark2, fg="white")
+        self.value_label = tk.Label(self.expense_input, text="Value (Monthly)", bg=dark2, fg="white")
 
-        self.colour_frame = tk.Frame(self.expense_input, bg=self.dark)
+        self.colour_frame = tk.Frame(self.expense_input, bg=dark)
         self.colour_frame.grid(row=0, column=2)
-        self.colour_label = tk.Label(self.colour_frame, text="Colour", bg=self.dark2, fg="white")
-        self.colour_button = tk.Button(self.colour_frame, text="Random", bg=self.dark2, fg="white", command=self.randomColour)
+        self.colour_label = tk.Label(self.colour_frame, text="Colour", bg=dark2, fg="white")
+        self.colour_button = tk.Button(self.colour_frame, text="Random", bg=dark2, fg="white", command=self.randomColour)
         self.colour_label.grid(row=0, column=0)
         self.colour_button.grid(row=0, column=1)
 
-        self.name_entry = tk.Entry(self.expense_input, bg=self.blue, fg = "white")
-        self.value_entry = tk.Entry(self.expense_input, bg=self.blue, fg = "white")
-        self.colour_entry = tk.Entry(self.expense_input, bg=self.blue, fg = "white")
+        self.name_entry = tk.Entry(self.expense_input, bg=blue, fg = "white")
+        self.value_entry = tk.Entry(self.expense_input, bg=blue, fg = "white")
+        self.colour_entry = tk.Entry(self.expense_input, bg=blue, fg = "white")
 
         self.name_label.grid(row=0, column=0)
         self.value_label.grid(row=0, column=1)
@@ -167,11 +159,11 @@ class MainWindow(tk.Tk):
         self.value_entry.grid(row=1, column=1)
         self.colour_entry.grid(row=1, column=2)
 
-        self.input_button = tk.Button(self.expense_input, text="Input", bg=self.dark2, fg="white", command=self.newExpense)
+        self.input_button = tk.Button(self.expense_input, text="Input", bg=dark2, fg="white", command=self.newExpense)
         self.input_button.grid(row=2, column=0, columnspan=3)
 
         # button to send over the expenses total to "need" on tab1
-        self.send_need_button = tk.Button(self.tab2, text="Set 'Need' in Salary and Ratios to Sum(Values)", bg=self.dark2, fg="white",
+        self.send_need_button = tk.Button(self.tab2, text="Set 'Need' in Salary and Ratios to Sum(Values)", bg=dark2, fg="white",
                                           command=lambda: self.usingExpenses(float(self.value_stat.cget("text")[13:])))
         self.send_need_button.pack()
 
@@ -180,26 +172,11 @@ class MainWindow(tk.Tk):
         self.value_entry.insert("0", "130")
         self.colour_entry.insert("0", "#e9c46a")
 
-    def tab3Content(self):
-
-        self.variables_frame = tk.Frame(self.tab3, bg=self.blue, width=100)
-        self.variables_frame.pack(side=tk.LEFT)
-
-        self.plot_button = tk.Button(self.variables_frame, bg=self.blue, text="Plot", command=self.plotData)
-        self.plot_button.pack(side=tk.LEFT)
-
-        self.plot_frame = tk.Frame(self.tab3, width=self.width-100, height=self.width-100)
-        self.plot_frame.pack()
-
-        canvas = FigureCanvasTkAgg(master=self.plot_frame)
-        canvas.draw()
-        canvas.get_tk_widget().pack()
-
     def tab4Content(self):
         self.scroll_hints = tk.Scrollbar(self.tab4)
         self.scroll_hints.pack(side=tk.RIGHT, fill=tk.Y)
 
-        self.hints = tk.Text(self.tab4, yscrollcommand=self.scroll_hints.set, bg=self.dark, fg="white", font="TkDefaultFont")
+        self.hints = tk.Text(self.tab4, yscrollcommand=self.scroll_hints.set, bg=dark, fg="white", font="TkDefaultFont")
         self.hints.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
         # ive opted to have it as a .txt file and open it so that
@@ -230,7 +207,7 @@ class MainWindow(tk.Tk):
 
         self.updateScrollbars("calc_button_pressed")
 
-        self.label_monthly.config(bg=self.blue)
+        self.label_monthly.config(bg=blue)
 
     def allTaxes(self, *args):
         pre_salary = 0
@@ -301,7 +278,7 @@ class MainWindow(tk.Tk):
         self.label_use_val.config(text=(7 - len(use_text))*"\u2007" + use_text)
 
     def newExpense(self):
-        self.colour_entry.configure(bg=self.blue, fg = "white")
+        self.colour_entry.configure(bg=blue, fg = "white")
         value = self.validFloat(self.value_entry.get())
         colour = self.validColour(self.colour_entry.get())
         if None in [value, colour]:
@@ -320,31 +297,6 @@ class MainWindow(tk.Tk):
         self.name_stat.configure(text="Mode(Name) = "+str(self.expenses_tree.modeColumn(-3)))
         self.value_stat.configure(text="Sum(Value) = "+str(self.expenses_tree.sumColumn(-2)))
         self.colour_stat.configure(text="Mode(Colour) = "+str(self.expenses_tree.modeColumn(-1)))
-
-    def plotData(self):
-
-        plt.close()
-
-        x, y_pre_tax, y = self.runSim(20)
-
-        fig, ax = plt.subplots()
-        ax.plot(x, y_pre_tax)
-        ax.plot(x, y)
-        ax.set_title("Plot")
-        ax.set_xlabel("Years")
-        ax.set_ylabel("Salary (K)")
-        ax.set_xlim(0, max(x))
-        ax.set_ylim(0)
-        plt.tight_layout()
-
-        # Clear the plot frame
-        for widget in self.plot_frame.winfo_children():
-            widget.destroy()
-
-        # Display the plot in the plot frame
-        canvas = FigureCanvasTkAgg(fig, master=self.plot_frame)
-        canvas.draw()
-        canvas.get_tk_widget().pack()
 
     def runSim(self, years):
 
