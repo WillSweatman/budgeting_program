@@ -225,6 +225,7 @@ class MainWindow(tk.Tk):
         if value == None:
             return
         
+        # now a salary has been enetered, plotting is possible
         self.unlock_tab(2)
 
         self.init_salary = value
