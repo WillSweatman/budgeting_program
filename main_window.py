@@ -28,7 +28,6 @@ class MainWindow(tk.Tk):
         # Set the custom style (not implemented)
         #custom_style = set_custom_style()
         
-        
         # creating notebook format
         self.notebook = ttk.Notebook(self)
         self.notebook.pack(side=tk.TOP, fill='both', expand=True)
@@ -146,7 +145,7 @@ class MainWindow(tk.Tk):
         self.colour_frame = tk.Frame(self.expense_input, bg=dark)
         self.colour_frame.grid(row=0, column=2)
         self.colour_label = tk.Label(self.colour_frame, text="Colour", bg=dark2, fg="white")
-        self.colour_button = tk.Button(self.colour_frame, text="Random", bg=dark2, fg="white", command=self.applyRandomColour)
+        self.colour_button = tk.Button(self.colour_frame, text="Random", bg=dark2, fg="white", command=self.applyColour)
         self.colour_label.grid(row=0, column=0)
         self.colour_button.grid(row=0, column=1)
 
@@ -169,9 +168,10 @@ class MainWindow(tk.Tk):
         self.send_need_button.pack()
 
         # just for now!!!, saves me entering it in every time
-        self.name_entry.insert("0", "train")
-        self.value_entry.insert("0", "130")
-        self.colour_entry.insert("0", "#e9c46a")
+        self.name_entry.insert("0", "example")
+        self.value_entry.insert("0", "0.00")
+        self.colour_entry.insert("0", "#ce2252")
+        self.applyColour("#ce2252")
 
     def tab4Content(self):
         self.scroll_hints = tk.Scrollbar(self.tab4)
@@ -312,8 +312,10 @@ class MainWindow(tk.Tk):
             
         return x, y_pre_tax, y
 
-    def applyRandomColour(self):
-        colour = randomColour()
+    def applyColour(self, colour=None):
+        if colour == None:
+            colour = randomColour()
+
         self.colour_entry.configure(bg=colour)
         self.colour_entry.delete(0, tk.END)
         self.colour_entry.insert("0", colour)
