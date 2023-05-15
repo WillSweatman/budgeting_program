@@ -12,7 +12,7 @@ from random import choice
 from treeview_class import CustomTreeview
 #from style_file import set_custom_style
 
-class MyWindow(tk.Tk):
+class MainWindow(tk.Tk):
     def __init__(self):
         super().__init__()
         
@@ -418,5 +418,5 @@ class MyWindow(tk.Tk):
 
 
 if __name__ == "__main__":
-    app = MyWindow()
+    app = MainWindow()
     app.mainloop()
