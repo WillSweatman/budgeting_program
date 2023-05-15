@@ -49,6 +49,31 @@ class MainWindow(tk.Tk):
         self.tab4Content()
         #self.tab5Content()
 
+        self.locked_tabs = set()
+        self.previous_tab_id = 0
+        self.notebook.bind("<<NotebookTabChanged>>", self._on_tab_change)
+        self.lock_tab(2)
+
+    def lock_tab(self, tab_id):
+        self.locked_tabs.add(tab_id)
+
+    def unlock_tab(self, tab_id):
+        self.locked_tabs.remove(tab_id)
+
+    def is_tab_locked(self, tab_id):
+        return tab_id in self.locked_tabs
+
+    def _on_tab_change(self, event):
+        tab_id = self.notebook.index(self.notebook.select())
+        if self.is_tab_locked(tab_id):
+            #print(tab_id, "locked")
+            tk.messagebox.showerror("Error", "Tab locked until salary entered")
+            self.notebook.select(self.previous_tab_id)
+            return
+        self.notebook.select(tab_id)
+        #print(tab_id, "selected")
+        self.previous_tab_id = tab_id
+
 
     def tab1Content(self):
         self.core = tk.Frame(self.tab1, bg=dark2)
@@ -197,8 +222,10 @@ class MainWindow(tk.Tk):
     def onClickTax(self):
 
         value = validFloat(self.salary_entry.get())
-        if  value == None:
+        if value == None:
             return
+        
+        self.unlock_tab(2)
 
         self.init_salary = value
 
