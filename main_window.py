@@ -11,6 +11,7 @@ from random import choice
 # my own classes/objects
 from treeview_class import CustomTreeview
 from plot_tab import PlottingTab
+from custom_functions import *
 from custom_colours import *
 #from style_file import set_custom_style
 
@@ -145,7 +146,7 @@ class MainWindow(tk.Tk):
         self.colour_frame = tk.Frame(self.expense_input, bg=dark)
         self.colour_frame.grid(row=0, column=2)
         self.colour_label = tk.Label(self.colour_frame, text="Colour", bg=dark2, fg="white")
-        self.colour_button = tk.Button(self.colour_frame, text="Random", bg=dark2, fg="white", command=self.randomColour)
+        self.colour_button = tk.Button(self.colour_frame, text="Random", bg=dark2, fg="white", command=self.applyRandomColour)
         self.colour_label.grid(row=0, column=0)
         self.colour_button.grid(row=0, column=1)
 
@@ -195,7 +196,7 @@ class MainWindow(tk.Tk):
 
     def onClickTax(self):
 
-        value = self.validFloat(self.salary_entry.get())
+        value = validFloat(self.salary_entry.get())
         if  value == None:
             return
 
@@ -279,8 +280,8 @@ class MainWindow(tk.Tk):
 
     def newExpense(self):
         self.colour_entry.configure(bg=blue, fg = "white")
-        value = self.validFloat(self.value_entry.get())
-        colour = self.validColour(self.colour_entry.get())
+        value = validFloat(self.value_entry.get())
+        colour = validColour(self.colour_entry.get())
         if None in [value, colour]:
             return
         
@@ -311,33 +312,11 @@ class MainWindow(tk.Tk):
             
         return x, y_pre_tax, y
 
-    def randomColour(self):
-        colour = "#" + "".join(choice("0123456789abcdef") for _ in range(6))
+    def applyRandomColour(self):
+        colour = randomColour()
         self.colour_entry.configure(bg=colour)
         self.colour_entry.delete(0, tk.END)
         self.colour_entry.insert("0", colour)
-
-    def validColour(self, colour):
-        # is there an input
-        if not colour:
-            return "#" + "".join(choice("0123456789abcdef") for _ in range(6))
-        # is the input a valid colour for tkinter
-        try:
-            dummy = tk.Label(self, bg=colour)
-            dummy.destroy()
-            return colour
-        except Exception:
-            tk.messagebox.showerror("Error", "Not a valid colour!\n" +
-                                    "Try a hex code (#123456) or colour name (red).")
-            return None
-
-    def validFloat(self, raw_value):
-        try:
-            value = float(raw_value)
-            return value
-        except ValueError:
-            tk.messagebox.showerror("Error", "Input must be a number.")
-            return None
 
     def usingExpenses(self, expense_total):
         if self.monthly_salary == 0:
