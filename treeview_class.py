@@ -2,6 +2,9 @@ import tkinter as tk
 from tkinter import ttk
 import numpy as np
 
+# my own classes/objects
+from custom_colours import *
+
 
 class CustomTreeview(ttk.Frame):
     def __init__(self, root, width=400, items=[]):
@@ -15,8 +18,7 @@ class CustomTreeview(ttk.Frame):
         # lets me stop selected items from turning blue everytime
         self.style = ttk.Style(self)
         self.style.theme_use("clam")
-        self.style.map("Treeview",
-        )
+        self.style.configure("Treeview", fieldbackground=blue)
 
         # stops the annoying dashed box around the selected notebook tab
         self.style.configure("Tab", focuscolor=self.style.configure(".")["background"])
